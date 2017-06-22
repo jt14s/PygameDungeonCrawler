@@ -1,0 +1,52 @@
+	
+playable characters:
+	the good shrimp
+	Barbara the barbarian
+	
+player stuff:
+	health
+	special
+	keys
+	money
+		pay to upgrade items
+		buy items at vendors
+
+weapons:
+	sword
+	bow
+	rope
+		barb wire
+		attach to casm
+		attach enemies together
+	combine weapons
+		rope 
+		
+backpack:
+	inventory of weapons
+	healing items
+	
+tier 1:
+	one dungeon
+		6 rooms
+	weapons
+		no upgrade
+		no fusing weapon
+	inventory
+	hud
+	boss
+	3 normal enemies
+	title menu
+	money is originally a collectible
+	
+tier 2:
+	weapon upgrades
+	multiple characters
+	another dungeon
+	special move
+	
+tier 3:
+	fusing weapons
+	multiplayer
+	music
+	sound effects
+	controller support
