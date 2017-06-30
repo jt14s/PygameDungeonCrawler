@@ -1,86 +1,42 @@
-import pygame,random,math
+import random,math
+from image_loader import *
 from pygame.locals import *
-
-#wall images
-WallImg = pygame.image.load('images/level1/wallbrickpattern.png')
-
-#floor images
-FloorImgCenter = pygame.image.load('images/level1/floors/floortile/floortile1.png')
-FloorImgTop = pygame.image.load('images/level1/floors/floortile/floortile2.png')
-FloorImgRight = pygame.image.load('images/level1/floors/floortile/floortile3.png')
-FloorImgLeft = pygame.image.load('images/level1/floors/floortile/floortile5.png')
-FloorImgTopRight = pygame.image.load('images/level1/floors/floortile/floortile6.png')
-FloorImgTopLeft = pygame.image.load('images/level1/floors/floortile/floortile9.png')
-FloorImgVerticalTunnel = pygame.image.load('images/level1/floors/floortile/floortile11.png')
-FloorImgTopDeadEnd = pygame.image.load('images/level1/floors/floortile/floortile12.png')
-
-#roof images
-RoofImgCenter = pygame.image.load('images/level1/rooftile/roof1.png')
-RoofImgCenterCenter = pygame.image.load('images/level1/rooftile/roof12.png')
-
-#torch images
-TorchImg1 = pygame.image.load('images/level1/wall_torch/walltorch1.png')
-TorchImg2 = pygame.image.load('images/level1/wall_torch/walltorch2.png')
-TorchImg3 = pygame.image.load('images/level1/wall_torch/walltorch3.png')
-TorchImg4 = pygame.image.load('images/level1/wall_torch/walltorch2.png')
-TorchImg5 = pygame.image.load('images/level1/wall_torch/walltorch1.png')
-TorchImg6 = pygame.image.load('images/level1/wall_torch/walltorch4.png')
-TorchImg7 = pygame.image.load('images/level1/wall_torch/walltorch5.png')
-TorchImg8 = pygame.image.load('images/level1/wall_torch/walltorch4.png')
-
-RopeImg = pygame.image.load('images/items/rope.png')
-InvImg = pygame.image.load('images/inventory.png')
-UiImg = pygame.image.load('images/hud.png')
 
 class Hero(pygame.sprite.Sprite):
 
-    #other entities associated with sprite
+    #all characters will share these attrivutes
     walls = None
     floors = None
     roofs = None
     mobs = None
     items = None
     keys = None
-    locks = None
         
-    def __init__(self, x, y,DIRECTION,upKeyPressed,downKeyPressed,leftKeyPressed,rightKeyPressed, spacePressed, screen_h, screen_w):
+    def __init__(self, x, y,DIRECTION,upKeyPressed,downKeyPressed,leftKeyPressed,rightKeyPressed, spacePressed, screen):
         #init self as a srpite object
         pygame.sprite.Sprite.__init__(self)
 
         #images and animation lists
-        self.image = pygame.image.load('images/pink/right/right1.png')
-        self.right_1 = pygame.image.load('images/pink/right/right1.png')
-        self.right_2 = pygame.image.load('images/pink/right/right2.png')
-        self.right_3 = pygame.image.load('images/pink/right/right3.png')
-
-        self.left_1 = pygame.image.load('images/pink/left/left1.png')
-        self.left_2 = pygame.image.load('images/pink/left/left2.png')
-        self.left_3 = pygame.image.load('images/pink/left/left3.png')
-
-        self.up_1 = pygame.image.load('images/pink/up/up1.png')
-        
-        self.down_1 = pygame.image.load('images/pink/down/down1.png')
-        self.down_2 = pygame.image.load('images/pink/down/down2.png')
-        self.down_3 = pygame.image.load('images/pink/down/down3.png')
-
-        self.walk_right_animation = [self.right_1,self.right_2,self.right_1,self.right_3]
-        self.walk_left_animation = [self.left_1,self.left_2,self.left_1,self.left_3]
-        self.walk_down_animation = [self.down_1,self.down_2,self.down_1,self.down_3]
-
-        #frame info
-        self.ticker = 0
-        self.current_frame = 0
+        self.image = PinkD1
+        self.up_1 = PinkU1
+        self.walk_right_animation = [PinkR1,PinkR2, PinkR1, PinkR3]
+        self.walk_left_animation = [PinkL1, PinkL2, PinkL1, PinkL3]
+        self.walk_down_animation = [PinkD1, PinkD2, PinkD1, PinkD3]
 
         #character hitbox
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
-        self.inv_x = (screen_w / 2) + 75
-        self.inv_y = screen_h / 1.5 + 55
-        self.inventory = Inventory(InvImg, self.inv_x, self.inv_y)
+        #frame info
+        self.ticker = 0
+        self.current_frame = 0
+        
+        #inv and ui
+        self.ui = UI((screen.get_width()/6)+10, 10, 100, 100, screen)
+        self.inventory = Inventory(InvImg, (screen.get_width()/2)-70, (screen.get_height()/1.1))
 
-        self.ui = None
+        self.item_slot_group = pygame.sprite.Group()
 
         #key variables
         self.DIRECTION = DIRECTION
@@ -94,21 +50,33 @@ class Hero(pygame.sprite.Sprite):
         self.RIGHT, self.LEFT, self.UP, self.DOWN = "right left up down".split()
         self.action = 'walking'
         self.can_move = True
+        self.walk_rate = 7
+        self.invuln_frames = 0
 
-    def walk(self):
-        pass
+        #hp vars
+        self.hp = 100
+        self.MAX_HP = 100
+        self.MIN_HP = 0
+
+        #sp vars
+        self.sp = 100
+        self.MAX_SP = 100
+        self.MIN_SP = 0
     
     def update(self):
         #instance of the player in a group to check against collisions
         player = pygame.sprite.GroupSingle(self)
         
         if self.downKeyPressed:
-            self.rect.y += 5
+            self.rect.y += self.walk_rate
             self.image = self.walk_down_animation[self.current_frame]
 
+            #this is how you calculate collisions between two sprite groups, then all collided are stored in list
             item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
             roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
+            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
 
+            #check trhough all calculated collisions
             for roof in roof_hit_list:
                 self.rect.bottom = roof.rect.top + 63
 
@@ -117,16 +85,32 @@ class Hero(pygame.sprite.Sprite):
 
                 for slot in self.inventory.slots:
                     if slot[1] == 'empty':
-                        slot[0].update_image(item.image, self.inventory.rect.x + 20 + ( slot[0].index * 60), self.inv_y + 20)
+                        #update slot info and then add to be drawn to screen
+                        slot[0].update_image(item.image, self.inventory.rect.x + 21 + ( slot[0].index * 60), self.inventory.rect.y + 23)
                         slot[1] = 'used'
+                        self.item_slot_group.add(slot[0])
                         break
                     
+            for mob in mob_hit_list:
+                if self.invuln_frames == 0:
+                    print('hit mob')
+                    self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
+                    self.ui.sp_bar.updateSpecial(mob.damage, self.sp, self.MAX_SP)
+
+                    self.sp -= mob.damage
+                    self.hp -= mob.damage
+                    if self.hp <= self.MIN_HP:
+                        print 'ded'
+
+                    self.invuln_frames = 20
+                    
         elif self.upKeyPressed:
-            self.rect.y -= 5
+            self.rect.y -= self.walk_rate
             self.image = self.up_1
 
             item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
             wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
+            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
 
             for wall in wall_hit_list:
                 self.rect.top = wall.rect.bottom - 63
@@ -136,17 +120,32 @@ class Hero(pygame.sprite.Sprite):
 
                 for slot in self.inventory.slots:
                     if slot[1] == 'empty':
-                        slot[0].update_image(item.image, self.inventory.rect.x + 20 + ( slot[0].index * 60), self.inv_y + 20)
+                        slot[0].update_image(item.image, self.inventory.rect.x + 21 + ( slot[0].index * 60), self.inventory.rect.y + 23)
                         slot[1] = 'used'
+                        self.item_slot_group.add(slot[0])
                         break
+
+            for mob in mob_hit_list:
+                if self.invuln_frames == 0:
+                    print('hit mob')
+                    self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
+                    self.ui.sp_bar.updateSpecial(mob.damage, self.sp, self.MAX_SP)
+
+                    self.sp -= mob.damage
+                    self.hp -= mob.damage
+                    if self.hp <= self.MIN_HP:
+                        print 'ded'
+
+                    self.invuln_frames = 20
             
         elif self.leftKeyPressed:
-            self.rect.x -= 5
+            self.rect.x -= self.walk_rate
             self.image = self.walk_left_animation[self.current_frame]
 
             item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
             roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
             wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
+            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
 
             for wall in wall_hit_list:
                 self.rect.left = wall.rect.right - 63
@@ -159,17 +158,32 @@ class Hero(pygame.sprite.Sprite):
 
                 for slot in self.inventory.slots:
                     if slot[1] == 'empty':
-                        slot[0].update_image(item.image, self.inventory.rect.x + 20 + ( slot[0].index * 60), self.inv_y + 20)
+                        slot[0].update_image(item.image, self.inventory.rect.x + 21 + ( slot[0].index * 60), self.inventory.rect.y + 23)
                         slot[1] = 'used'
+                        self.item_slot_group.add(slot[0])
                         break
+                    
+            for mob in mob_hit_list:
+                if self.invuln_frames == 0:
+                    print('hit mob')
+                    self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
+                    self.ui.sp_bar.updateSpecial(mob.damage, self.sp, self.MAX_SP)
+
+                    self.sp -= mob.damage
+                    self.hp -= mob.damage
+                    if self.hp <= self.MIN_HP:
+                        print 'ded'
+
+                    self.invuln_frames = 20
                 
         elif self.rightKeyPressed:
-            self.rect.x += 5
+            self.rect.x += self.walk_rate
             self.image = self.walk_right_animation[self.current_frame]
 
             item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
             roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
             wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
+            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
 
             for wall in wall_hit_list:
                 self.rect.right = wall.rect.left + 63
@@ -182,9 +196,29 @@ class Hero(pygame.sprite.Sprite):
 
                 for slot in self.inventory.slots:
                     if slot[1] == 'empty':
-                        slot[0].update_image(item.image, self.inventory.rect.x + 20 + ( slot[0].index * 60), self.inv_y + 20)
+                        slot[0].update_image(item.image, self.inventory.rect.x + 21 + ( slot[0].index * 60), self.inventory.rect.y + 23)
                         slot[1] = 'used'
+                        self.item_slot_group.add(slot[0])
                         break
+
+            for mob in mob_hit_list:
+                if self.invuln_frames == 0:
+                    print('hit mob')
+                    self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
+                    self.ui.sp_bar.updateSpecial(mob.damage, self.sp, self.MAX_SP)
+
+                    self.sp -= mob.damage
+                    self.hp -= mob.damage
+                    if self.hp <= self.MIN_HP:
+                        print 'ded'
+
+                    self.invuln_frames = 20
+
+
+
+        if self.invuln_frames != 0:
+            self.invuln_frames -= 1
+            print 'invulnerable'
 
         #advance the current frame based on FPS
         self.ticker += 1
@@ -192,8 +226,9 @@ class Hero(pygame.sprite.Sprite):
             self.current_frame = (self.current_frame + 1) % 4
             self.ticker = 0
 
+
 class UI(pygame.sprite.Sprite):
-    def __init__(self, x, y, hp, sp):
+    def __init__(self, x, y, hp, sp, screen):
         pygame.sprite.Sprite.__init__(self)
         
         self.image = UiImg
@@ -206,14 +241,79 @@ class UI(pygame.sprite.Sprite):
         self.curr_hp = hp
         self.curr_sp = sp
 
-        self.hp_bar = HpBar()
-        self.sp_bar = SPBar()
-
-class UIBar(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+        #we need to pass in an x and y coordinate, so pass in the x and y of the UI
+        self.hp_bar = HPBar(HealthBar, x, y, screen)
+        self.sp_bar = SPBar(SpecialBar, x, y, screen)
+       
+class HPBar(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, screen):
         pygame.sprite.Sprite.__init__(self)
         
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x + 20
+        self.rect.y = y + 15
 
+        self.orig_image = self.image
+        self.orig_x = self.rect.x
+        self.orig_width = self.rect.width
+
+        self.bar_group = pygame.sprite.Group()
+        self.bar_group.add(self)
+        self.bar_group.draw(screen)
+
+    def updateHealth(self, damage, hp, maxhp):
+        damage_percent = (hp - damage) / float(maxhp)
+        chop_area = (0,0, self.orig_width * (1 - damage_percent),0)
+        self.rect.x = self.orig_x + (self.orig_width * (1 - damage_percent))
+        self.image = pygame.transform.chop(self.orig_image, chop_area)
+
+
+class SPBar(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, screen):
+        pygame.sprite.Sprite.__init__(self)
+        
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x + 424
+        self.rect.y = y + 15
+
+        self.orig_image = self.image
+        self.orig_x = self.rect.x
+        self.orig_width = self.rect.width
+
+        self.bar_group = pygame.sprite.Group()
+        self.bar_group.add(self)
+        self.bar_group.draw(screen)
+
+    def updateSpecial(self, damage, sp, maxsp):
+        damage_percent = (sp - damage) / float(maxsp)
+        chop_area = (0,0, self.orig_width * (1 - damage_percent),0)
+        self.image = pygame.transform.chop(self.orig_image, chop_area)
+
+class Inventory(pygame.sprite.Sprite):
+    def __init__(self, image, x, y):
+       pygame.sprite.Sprite.__init__(self)
+
+       self.image = image
+       self.rect = self.image.get_rect()
+       self.rect.x = x
+       self.rect.y = y
+
+       self.slots = [[ItemSlot(0), 'empty'], [ItemSlot(1), 'empty']]
+
+class ItemSlot(pygame.sprite.Sprite):
+    def __init__(self, index):
+        pygame.sprite.Sprite.__init__(self)
+        self.index = index
+
+    def update_image(self, image, x, y):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        
 class Item(pygame.sprite.Sprite):
     def __init__(self, name, image, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -228,31 +328,43 @@ class Item(pygame.sprite.Sprite):
 class Rope(Item):
     def __init__(self, name, image, x, y):
         Item.__init__(self, name, image, x, y)
+        
 
-
-class Inventory(pygame.sprite.Sprite):
-    def __init__(self, image, x, y):
-       pygame.sprite.Sprite.__init__(self)
-
-       self.image = image
-       self.rect = self.image.get_rect()
-       self.rect.x = x
-       self.rect.y = y
-
-        #change this to a list
-       self.slots = [[ItemSlot(0), 'empty'], [ItemSlot(1), 'empty']]
-
-class ItemSlot(pygame.sprite.Sprite):
-    def __init__(self, index):
+class Mob(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, hp):
         pygame.sprite.Sprite.__init__(self)
-        self.index = index
-
-    def update_image(self, image, x, y):
+        
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        
+        self.hp = hp
+        self.damage = 20
+
+class ShrimpMob(Mob):
+    def __init__(self, x, y):
+        self.walk1 = pygame.image.load('images/mobs/shrimp/left/walk1.png')
+        Mob.__init__(self, self.walk1, x, y, 100)
+
+        self.walk2 = pygame.image.load('images/mobs/shrimp/left/walk2.png')
+
+        self.aggro1 = pygame.image.load('images/mobs/shrimp/left/aggro1.png')
+        self.aggro2 = pygame.image.load('images/mobs/shrimp/left/aggro2.png')
+
+        self.neutral_animation = [self.walk1, self.walk2]
+        self.aggro_animation = [self.aggro1, self.aggro2]
+
+        self.current_frame = 0
+        self.ticker = 0
+
+    def update(self):
+        self.image = self.neutral_animation[self.current_frame]
+
+        self.ticker += 1
+        if self.ticker % 15 == 0:
+            self.current_frame = (self.current_frame + 1) % 2
+            self.ticker = 0
+
 
 class MapTile(pygame.sprite.Sprite):
     def __init__(self, x, y, image):
@@ -292,6 +404,7 @@ class TorchBrick(MapTile):
         elif self.ticker % 8 == 0:
             self.current_frame += 1
 
+
 class Room(object):
     wall_list = None
     floor_list = None
@@ -312,21 +425,22 @@ class Room1(Room):
         Room.__init__(self)
 
         room_layout = ['RRRRRRRRRRRRRRRRRRx',
-                       'WTWWTWWTWWTWWTWWTWx',
-                       'FFFFFFFFFFFFFFFFFFx',
-                       'FFFFFFFFFFFFFFFFFFx',
-                       'RRFFRRRRFFRRFFFFFFx',
-                       'RRFFRRRRFFRRFFFFFFx',
-                       'RRFFTWWTFFRRFFFFFFx',
-                       'WWFFFFFFFFWWFFFFFFx',
-                       'FFFFFFFFFFFFFFFFFFx',
-                       'FFFFFFFFFFFFFFFFFFx',
-                       'FFFFFFFFFFFFFFFFFFx',
-                       'FFFFFFFFFFFFFFFFFFx',
-                       'FFFFFWFFFFFFFFFFFFx',
-                       'FFFFFFFFFFFFFFFFFFx',]
+                       'RTWRTWWTWWRWWTWWTRx',
+                       'RFFRFFFFFFRFFFFFFWx',
+                       'RFFRFFFFFFRFFFFFFFx',
+                       'RFFRFFFFFFRFFFFFFFx',
+                       'RFFRFFFFFFRFFFRRRRx',
+                       'RFFRFFFFFFRFFFRRRRx',
+                       'RFFRRRRFRRRFFFWWWRx',
+                       'RFFRRRRFRRRFFFFFFRx',
+                       'RFFTWWTFTWWFFFFFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'RFFRRRRFFFFFFFFFFRx',
+                       'RFFRRRRFFFFFFFFFFRx',
+                       'RRRRRRRRRRRRRRRRRRx',]
         
-        items = [Rope('rope', RopeImg, 544, 340), Rope('rope', RopeImg, 136, 340)]
+        items = [Rope('rope', RopeImg, 544, 340), Rope('rope', RopeImg, 136 + 68 * 3, 340)]
+        mobs = [ShrimpMob(816, 136)]
         roofs = []
         walls = []
         floors = []
@@ -357,75 +471,82 @@ class Room1(Room):
 
         for floor in floors:
             self.floor_list.add(floor)
+            
         for item in items:
             self.item_list.add(item)
+
+        for mob in mobs:
+            self.mob_list.add(mob)
+
             
 class GameMain():
     done = False
    
     def __init__(self,width = 1224, height = 952):
         pygame.init()
-        
+
+        #background color
         self.color_x = 252
         self.color_y = 216
         self.color_z = 168
-        
+
+        #set screen variables
         self.width, self.height = width, height
         pygame.display.set_caption("Maiden Hearts")
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.clock = pygame.time.Clock()
-        
-        self.hero = Hero(68,136,"UP",False,False,False,False,False, self.width, self.height)        
+
+        #create hero and necessary sprite groups
+        self.hero = Hero(68,136,"UP",False,False,False,False,False, self.screen)        
         self.all_sprite_list = pygame.sprite.Group()
-        self.all_sprite_list.add(self.hero)
-        
+        self.all_room_tiles = pygame.sprite.Group()
+
+        #room variables
         self.rooms = [Room1()]
         self.current_x = 0
         self.current_room = self.rooms[self.current_x]
-        
-        self.hero.items = self.rooms[self.current_x].item_list
-        self.hero.walls = self.rooms[self.current_x].wall_list
-        self.hero.roofs = self.rooms[self.current_x].roof_list
+
+        #access room entities
+        self.hero.items = self.current_room.item_list
+        self.hero.walls = self.current_room.wall_list
+        self.hero.roofs = self.current_room.roof_list
+        self.hero.mobs = self.current_room.mob_list
+
+        #load sprite groups accordingly
+        self.all_room_tiles.add(self.current_room.floor_list,self.current_room.wall_list,self.current_room.item_list)
+        self.all_sprite_list.add(self.hero.mobs, self.hero)
+
+        self.ui = pygame.sprite.GroupSingle(self.hero.ui)
         self.inv = pygame.sprite.GroupSingle(self.hero.inventory)
-        self.inv_slots = pygame.sprite.Group()
-
-        self.hero.ui = UI((width/6) + 15, 10, 100, 100)
-        self.ui = pygame.sprite.GroupSingle(self.hero.ui)        
-
-        #self.check = False
         
     def main_loop(self):
-        while not self.done:
-
-            #this may not be the best place to put this, maybe move it to a method
-            #if not self.check:
-            for slot in self.hero.inventory.slots:
-                if hasattr(slot[0], 'image'):
-                    self.inv_slots.add(slot[0])
-            
+        while not self.done:       
             self.handle_events()
             self.draw()
-            self.all_sprite_list.update()            
+            self.all_sprite_list.update()
             self.clock.tick(60)
         
         pygame.quit()
         
     def draw(self):
+        if self.hero.hp <= 0:
+            self.all_sprite_list.remove(self.hero)
+        
         self.screen.fill((self.color_x, self.color_y, self.color_z))
 
-        #move this to a function
-        self.current_room.floor_list.draw(self.screen)
-        self.current_room.wall_list.draw(self.screen)
+        self.all_room_tiles.draw(self.screen)
         self.current_room.item_list.draw(self.screen)
         self.all_sprite_list.draw(self.screen)
         self.current_room.roof_list.draw(self.screen)
-        
 
+        self.current_room.wall_list.update()
+        
+        self.hero.ui.hp_bar.bar_group.draw(self.screen)
+        self.hero.ui.sp_bar.bar_group.draw(self.screen)
+        self.ui.draw(self.screen)
 
         self.inv.draw(self.screen)
-        self.ui.draw(self.screen)
-        self.inv_slots.draw(self.screen)
-        self.current_room.wall_list.update()
+        self.hero.item_slot_group.draw(self.screen)
 
         pygame.display.flip()
             
