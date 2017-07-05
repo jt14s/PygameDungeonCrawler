@@ -10,10 +10,17 @@ PinkL2 = pygame.image.load('images/pink/left/left2.png')
 PinkL3 = pygame.image.load('images/pink/left/left3.png')
 
 PinkU1 = pygame.image.load('images/pink/up/up1.png')
+PinkU2 = pygame.image.load('images/pink/up/up2.png')
+PinkU3 = pygame.image.load('images/pink/up/up3.png')
         
 PinkD1 = pygame.image.load('images/pink/down/down1.png')
 PinkD2 = pygame.image.load('images/pink/down/down2.png')
 PinkD3 = pygame.image.load('images/pink/down/down3.png')
+
+PinkAttackR1 = pygame.image.load('images/pink/right/attack1.png')
+PinkAttackR2 = pygame.image.load('images/pink/right/attack2.png')
+PinkAttackR3 = pygame.image.load('images/pink/right/attack3.png')
+
 
 #wall images
 WallImg = pygame.image.load('images/level1/wallbrickpattern.png')
@@ -42,8 +49,12 @@ TorchImg6 = pygame.image.load('images/level1/wall_torch/walltorch4.png')
 TorchImg7 = pygame.image.load('images/level1/wall_torch/walltorch5.png')
 TorchImg8 = pygame.image.load('images/level1/wall_torch/walltorch4.png')
 
-#item and ui images
-RopeImg = pygame.image.load('images/items/rope.png')
+#items
+RopeImg = pygame.image.load('images/items/rope/rope.png')
+ThrownRopeDown = pygame.image.load('images/items/rope/throwndown1.png')
+BowImg = pygame.image.load('images/items/bow/bow.png')
+
+#hud images
 InvImg = pygame.image.load('images/inventory.png')
 UiImg = pygame.image.load('images/hud.png')
 HealthBar = pygame.image.load('images/healthbar.png')
