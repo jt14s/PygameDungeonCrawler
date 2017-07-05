@@ -69,6 +69,9 @@ class GameMain():
         self.current_room.item_list.draw(self.screen)
         self.all_sprite_list.draw(self.screen)
 
+        for mob in self.current_room.mob_list:
+            mob.follow_hero(self.hero)
+
         ##
         self.projectiles.draw(self.screen)
         self.projectiles.update()

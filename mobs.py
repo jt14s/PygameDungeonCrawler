@@ -1,4 +1,4 @@
-import pygame
+import pygame, math
 from image_loader import *
 
 class Mob(pygame.sprite.Sprite):
