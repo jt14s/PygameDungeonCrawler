@@ -11,7 +11,12 @@ class Mob(pygame.sprite.Sprite):
         self.rect.y = y
         self.hp = hp
         self.damage = 20
-        #self.boolean_direction = False
+
+        #this is the bounds to check against
+        self.aggro_right = self.rect.x + 400
+        self.aggro_left = self.rect.x - 400
+        self.aggro_top = self.rect.y - 400
+        self.aggro_bottom = self.rect.y + 400
 
     def follow_hero(self, Hero):
         #find direction vector from hero to enemy
@@ -21,15 +26,27 @@ class Mob(pygame.sprite.Sprite):
         direction_x /= direction
         direction_y /= direction
 
-        #if self.boolean_direction == False:
         self.rect.x += self.speed * direction_x
-            #self.boolean_direction = True
-        #else:
         self.rect.y += self.speed * direction_y
-            #self.boolean_direction = False
 
-    def movement(self, x, y):
-        self.rect.move_ip(x,y)
+    #does something but not sure what, kind of moves you in a random direction
+    def move_to_coordinate(self, destination_x = 0, destination_y = 0):
+        direction_x = destination_x - self.rect.x
+        direction_y = destination_y - self.rect.y
+        direction = math.hypot(direction_x, direction_y)
+        direction_x /= direction
+        direction_y /= direction
+        self.rect.x += self.speed * direction_x
+        self.rect.y += self.speed * direction_y
+
+    def look_for_hero(self, Hero):
+        print "LOOKING FOR HERO"
+        if Hero.rect.y <= self.aggro_bottom and Hero.rect.y >= self.aggro_top:
+            print "FOUND HERO Y DIRECTION"
+            if Hero.rect.x >= self.aggro_left and Hero.rect.x <= self.aggro_right:
+                print "FOUND HERO X DIRECTION"
+                return True
+        return False
 
 class ShrimpMob(Mob):
     def __init__(self, x, y):
