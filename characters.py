@@ -72,153 +72,81 @@ class Hero(pygame.sprite.Sprite):
     def update(self):
         #instance of the player in a group to check against collisions
         player = pygame.sprite.GroupSingle(self)
-        
+
+        mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
+        item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
+
+        for item in item_hit_list:
+            print('picked up item')
+
+            for slot in self.inventory.slots:
+                if slot[1] == 'empty':
+                    #update slot info and then add to be drawn to screen
+                    slot[0].addToInventory(item.name, item.image, self.inventory.rect.x + 21 + ( slot[0].index * 60), self.inventory.rect.y + 23)
+                    slot[1] = 'used'
+                    self.item_slot_group.add(slot[0])
+                    break
+                    
+        for mob in mob_hit_list:
+            if self.invuln_frames == 0:
+                print('hit mob')
+                self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
+                self.ui.sp_bar.updateSpecial(mob.damage, self.sp, self.MAX_SP)
+
+                self.sp -= mob.damage
+                self.hp -= mob.damage
+                if self.hp <= self.MIN_HP:
+                    print 'ded'
+
+                self.invuln_frames = 20
+                    
         if self.downKeyPressed and self.can_move:
             self.rect.y += self.walk_rate
             self.image = self.walk_down_animation[self.current_frame]
 
             #this is how you calculate collisions between two sprite groups, then all collided are stored in list
-            item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
             roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
-            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
-
+ 
             #check trhough all calculated collisions
             for roof in roof_hit_list:
                 self.rect.bottom = roof.rect.top + 63
-
-            for item in item_hit_list:
-                print('picked up item')
-
-                for slot in self.inventory.slots:
-                    if slot[1] == 'empty':
-                        #update slot info and then add to be drawn to screen
-                        slot[0].addToInventory(item.name, item.image, self.inventory.rect.x + 21 + ( slot[0].index * 60), self.inventory.rect.y + 23)
-                        slot[1] = 'used'
-                        self.item_slot_group.add(slot[0])
-                        break
                     
-            for mob in mob_hit_list:
-                if self.invuln_frames == 0:
-                    print('hit mob')
-                    self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
-                    self.ui.sp_bar.updateSpecial(mob.damage, self.sp, self.MAX_SP)
-
-                    self.sp -= mob.damage
-                    self.hp -= mob.damage
-                    if self.hp <= self.MIN_HP:
-                        print 'ded'
-
-                    self.invuln_frames = 20
                     
         elif self.upKeyPressed and self.can_move:
             self.rect.y -= self.walk_rate
             self.image = self.walk_up_animation[self.current_frame]
 
-            item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
             wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
-            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
 
             for wall in wall_hit_list:
                 self.rect.top = wall.rect.bottom - 63
 
-            for item in item_hit_list:
-                print('picked up item')
-
-                for slot in self.inventory.slots:
-                    if slot[1] == 'empty':
-                        slot[0].addToInventory(item.name, item.image, self.inventory.rect.x + 21 + ( slot[0].index * 60), self.inventory.rect.y + 23)
-                        slot[1] = 'used'
-                        self.item_slot_group.add(slot[0])
-                        break
-
-            for mob in mob_hit_list:
-                if self.invuln_frames == 0:
-                    print('hit mob')
-                    self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
-                    self.ui.sp_bar.updateSpecial(mob.damage, self.sp, self.MAX_SP)
-
-                    self.sp -= mob.damage
-                    self.hp -= mob.damage
-                    if self.hp <= self.MIN_HP:
-                        print 'ded'
-
-                    self.invuln_frames = 20
             
         elif self.leftKeyPressed and self.can_move:
             self.rect.x -= self.walk_rate
             self.image = self.walk_left_animation[self.current_frame]
 
-            item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
             roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
             wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
-            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
 
             for wall in wall_hit_list:
                 self.rect.left = wall.rect.right - 63
 
             for roof in roof_hit_list:
                 self.rect.left = roof.rect.right - 63
-
-            for item in item_hit_list:
-                print('picked up item')
-
-                for slot in self.inventory.slots:
-                    if slot[1] == 'empty':
-                        slot[0].addToInventory(item.name, item.image, self.inventory.rect.x + 21 + ( slot[0].index * 60), self.inventory.rect.y + 23)
-                        slot[1] = 'used'
-                        self.item_slot_group.add(slot[0])
-                        break
-                    
-            for mob in mob_hit_list:
-                if self.invuln_frames == 0:
-                    print('hit mob')
-                    self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
-                    self.ui.sp_bar.updateSpecial(mob.damage, self.sp, self.MAX_SP)
-
-                    self.sp -= mob.damage
-                    self.hp -= mob.damage
-                    if self.hp <= self.MIN_HP:
-                        print 'ded'
-
-                    self.invuln_frames = 20
                 
         elif self.rightKeyPressed and self.can_move:
             self.rect.x += self.walk_rate
             self.image = self.walk_right_animation[self.current_frame]
 
-            item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
             roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
             wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
-            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
 
             for wall in wall_hit_list:
                 self.rect.right = wall.rect.left + 63
 
             for roof in roof_hit_list:
                 self.rect.right = roof.rect.left + 63
-
-            for item in item_hit_list:
-                print('picked up item')
-
-                for slot in self.inventory.slots:
-                    if slot[1] == 'empty':
-                        slot[0].addToInventory(item.name, item.image, self.inventory.rect.x + 21 + ( slot[0].index * 60), self.inventory.rect.y + 23)
-                        slot[1] = 'used'
-                        self.item_slot_group.add(slot[0])
-                        break
-
-            for mob in mob_hit_list:
-                if self.invuln_frames == 0:
-                    print('hit mob')
-                    self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
-                    self.ui.sp_bar.updateSpecial(mob.damage, self.sp, self.MAX_SP)
-
-                    self.sp -= mob.damage
-                    self.hp -= mob.damage
-                    if self.hp <= self.MIN_HP:
-                        print 'ded'
-
-                    self.invuln_frames = 20
 
         if self.invuln_frames != 0:
             self.invuln_frames -= 1

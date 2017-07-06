@@ -11,16 +11,22 @@ class Mob(pygame.sprite.Sprite):
         self.rect.y = y
         self.hp = hp
         self.damage = 20
+        #self.boolean_direction = False
 
     def follow_hero(self, Hero):
         #find direction vector from hero to enemy
-        direction_x = self.rect.x - Hero.rect.x
-        direction_y = self.rect.y - Hero.rect.y
+        direction_x = Hero.rect.x - self.rect.x
+        direction_y = Hero.rect.y - self.rect.y
         direction = math.hypot(direction_x, direction_y)
         direction_x /= direction
         direction_y /= direction
+
+        #if self.boolean_direction == False:
         self.rect.x += self.speed * direction_x
+            #self.boolean_direction = True
+        #else:
         self.rect.y += self.speed * direction_y
+            #self.boolean_direction = False
 
     def movement(self, x, y):
         self.rect.move_ip(x,y)
@@ -47,6 +53,9 @@ class ShrimpMob(Mob):
         self.image = self.neutral_animation[self.current_frame]
 
         self.ticker += 1
-        if self.ticker % 15 == 0:
+        #originally set to mod 15
+        if self.ticker % 5 == 0:
             self.current_frame = (self.current_frame + 1) % 2
             self.ticker = 0
+
+        

@@ -49,6 +49,7 @@ class GameMain():
         self.inv = pygame.sprite.GroupSingle(self.hero.inventory)
 
         self.projectiles = pygame.sprite.Group()
+
         
     def main_loop(self):
         while not self.done:       
@@ -71,6 +72,7 @@ class GameMain():
 
         for mob in self.current_room.mob_list:
             mob.follow_hero(self.hero)
+
 
         ##
         self.projectiles.draw(self.screen)
