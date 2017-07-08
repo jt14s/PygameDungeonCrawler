@@ -17,10 +17,22 @@ PinkD1 = pygame.image.load('images/pink/down/down1.png')
 PinkD2 = pygame.image.load('images/pink/down/down2.png')
 PinkD3 = pygame.image.load('images/pink/down/down3.png')
 
+#attack images
 PinkAttackR1 = pygame.image.load('images/pink/right/attack1.png')
 PinkAttackR2 = pygame.image.load('images/pink/right/attack2.png')
 PinkAttackR3 = pygame.image.load('images/pink/right/attack3.png')
 
+PinkAttackL1 = pygame.image.load('images/pink/left/attack1.png')
+PinkAttackL2 = pygame.image.load('images/pink/left/attack2.png')
+PinkAttackL3 = pygame.image.load('images/pink/left/attack3.png')
+
+PinkAttackU1 = pygame.image.load('images/pink/up/attack1.png')
+PinkAttackU2 = pygame.image.load('images/pink/up/attack2.png')
+PinkAttackU3 = pygame.image.load('images/pink/up/attack3.png')
+
+PinkAttackD1 = pygame.image.load('images/pink/down/attack1.png')
+PinkAttackD2 = pygame.image.load('images/pink/down/attack2.png')
+PinkAttackD3 = pygame.image.load('images/pink/down/attack3.png')
 
 #wall images
 WallImg = pygame.image.load('images/level1/wallbrickpattern.png')

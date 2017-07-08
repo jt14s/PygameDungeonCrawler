@@ -31,7 +31,7 @@ class GameMain():
         self.all_room_tiles = pygame.sprite.Group()
 
         #room variables
-        self.rooms = [Room1(),Room2()]
+        self.rooms = [Room2(),Room2()]
         self.current_x = 0
         self.current_room = self.rooms[self.current_x]
 
@@ -52,7 +52,7 @@ class GameMain():
 
         
     def main_loop(self):
-        while not self.done:       
+        while not self.done:
             self.handle_events()
             self.draw()
             self.all_sprite_list.update()
@@ -70,11 +70,12 @@ class GameMain():
         self.current_room.item_list.draw(self.screen)
         self.all_sprite_list.draw(self.screen)
 
+        '''
         for mob in self.current_room.mob_list:
-            mob.follow_hero(self.hero)
-
-
-        ##
+            if mob.look_for_hero(self.hero) == True:
+                mob.follow_hero(self.hero)
+        '''
+        
         self.projectiles.draw(self.screen)
         self.projectiles.update()
         
@@ -124,43 +125,16 @@ class GameMain():
                     self.hero.DIRECTION = self.hero.RIGHT
 
                 #fix the attack animation
-                elif event.key == K_SPACE:
+                elif event.key == K_SPACE and self.hero.can_attack:
                     print 'space pressed'
                     self.hero.spacePressed = True
                     self.hero.can_move = False
+                    self.can_attack = False
+                    self.hero.attack_timer = 15
 
-                    old_rect = self.hero.rect
-                    old_rect_x = self.hero.rect.x
-                    old_rect_y = self.hero.rect.y
-                    print self.hero.DIRECTION
-
-                    if self.hero.DIRECTION == self.hero.RIGHT:
-                        print 'here'
-                        self.hero.image = self.hero.attack_right_animation[2]
-                        self.hero.rect = self.hero.image.get_rect()
-                        self.hero.rect.x = old_rect_x
-                        self.hero.rect.y = old_rect_y
-
-                        frame = 0
-
-                        for x in range(1,128):
-                            if x % 42 == 0:
-                                print x
-                                self.hero.image = self.hero.attack_right_animation[frame]
-                                frame += 1
-
-                        mob_hit_list = pygame.sprite.spritecollide(self.hero, self.hero.mobs, False)
-
-                        for mob in mob_hit_list:
-                            print 'hit mob'
-
-                        self.hero.image = self.hero.walk_right_animation[0]
-                        self.hero.rect = old_rect
-                        self.hero.rect.x = old_rect_x
-                        self.hero.rect.y = old_rect_y
+                    #self.hero.old_rect = self.hero.walk_right_animation[0].get_rect()       #save the old hitbox
+                    #self.hero.rect = self.hero.attack_right_animation[2].get_rect()         #set new hitbox as extended one
                     
-                    self.hero.can_move = True
-
                 #items
                 if event.key == K_1 and self.hero.inventory.slots[0][1] != 'empty':
                     self.hero.oneKeyPressed = True
@@ -179,7 +153,7 @@ class GameMain():
                         thrown_rope = ThrownRope(self.hero.rect.x + 30, self.hero.rect.y + 30, self.hero.DIRECTION, self.hero.walls, self.hero.roofs, self.hero.mobs)
                         self.projectiles.add(thrown_rope)
                         
-            elif event.type == KEYUP:
+            elif event.type == KEYUP and self.hero.can_move == True:
                 if event.key == K_UP:
                     self.hero.upKeyPressed = False
                     
