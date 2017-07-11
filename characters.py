@@ -1,17 +1,19 @@
 import pygame
 from image_loader import *
 from hud import *
+from game import *
 
 class Hero(pygame.sprite.Sprite):
 
-    #all characters will share these attrivutes
+    #all characters will share these attributes
     walls = None
     floors = None
     roofs = None
     mobs = None
-    items = None
-    keys = None
-        
+    portals = None
+
+    current_room = None
+
     def __init__(self, x, y,DIRECTION, screen):
         #init self as a srpite object
         pygame.sprite.Sprite.__init__(self)
@@ -42,6 +44,7 @@ class Hero(pygame.sprite.Sprite):
         #frame info
         self.ticker = 0
         self.current_frame = 0
+	self.screen = screen
         
         #inv and ui
         self.ui = UI((screen.get_width()/6)+10, 10, 100, 100, screen)
@@ -63,21 +66,20 @@ class Hero(pygame.sprite.Sprite):
         self.twoPressed = False
 
         #misc
-        self.action = 'walking'
+        self.action = 'walking' #THIS IS NOT USED IN CHARACTER OR GAME. SHOULD IT BE REMOVED???
         self.can_move = True
         self.can_attack = True
         self.walk_rate = 5
         self.invuln_frames = 0
+	self.items = None
 
         #hp vars
         self.hp = 100
         self.MAX_HP = 100
-        self.MIN_HP = 0
 
         #sp vars
         self.sp = 100
         self.MAX_SP = 100
-        self.MIN_SP = 0
 
         #attack frames
         self.attack_timer = -1
@@ -90,7 +92,7 @@ class Hero(pygame.sprite.Sprite):
         mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
         item_hit_list = pygame.sprite.groupcollide(self.items, player, True, False)
 
-        #check trhough all calculated collisions
+        #check through all calculated collisions
         for item in item_hit_list:
             print('picked up item')
 
@@ -101,7 +103,8 @@ class Hero(pygame.sprite.Sprite):
                     slot[1] = 'used'
                     self.item_slot_group.add(slot[0])
                     break
-                    
+        
+	#THIS SHOULD BE MOVED TO A TAKE_DAMAGE FUNCTION ONCE THE MOB GETS AN ATTACK ANIMATION!!!!
         for mob in mob_hit_list:
             if self.invuln_frames == 0:
                 print('hit mob')
@@ -110,61 +113,83 @@ class Hero(pygame.sprite.Sprite):
 
                 self.sp -= mob.damage
                 self.hp -= mob.damage
-                if self.hp <= self.MIN_HP:
-                    print 'ded'
+                if self.hp <= 0:
+                    print 'hero ded'
 
                 self.invuln_frames = 20
 
-        #if able to attack
+        #if attacking
         if self.attack_timer >= 0:
             self.attack()
 
-        #if not able to attack
+        #if can move and key pressed
+	if self.upKeyPressed and self.can_move:
+            self.rect.y -= self.walk_rate
+            self.image = self.walk_up_animation[self.current_frame]
+
+            wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
+
+	    portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False, collided=pygame.sprite.collide_rect_ratio(1))
+
+            for wall in wall_hit_list:
+                self.rect.top = wall.rect.bottom - 63
+
+	    for portal in portal_hit_list:
+		print "PORTAL"
+		self.current_room = portal.room
+
         if self.downKeyPressed and self.can_move:
             self.rect.y += self.walk_rate
             self.image = self.walk_down_animation[self.current_frame]
 
             roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
  
+	    portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False, collided=pygame.sprite.collide_rect_ratio(1))
+
             for roof in roof_hit_list:
                 self.rect.bottom = roof.rect.top + 63
-                    
-                    
-        elif self.upKeyPressed and self.can_move:
-            self.rect.y -= self.walk_rate
-            self.image = self.walk_up_animation[self.current_frame]
 
-            wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
-
-            for wall in wall_hit_list:
-                self.rect.top = wall.rect.bottom - 63
-
+	    for portal in portal_hit_list:
+		print "PORTAL"
+		self.current_room = portal.room
             
-        elif self.leftKeyPressed and self.can_move:
+        if self.leftKeyPressed and self.can_move:
             self.rect.x -= self.walk_rate
             self.image = self.walk_left_animation[self.current_frame]
 
             roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
             wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
 
+	    portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False, collided=pygame.sprite.collide_rect_ratio(1))
+
             for wall in wall_hit_list:
                 self.rect.left = wall.rect.right - 63
 
             for roof in roof_hit_list:
                 self.rect.left = roof.rect.right - 63
-                
-        elif self.rightKeyPressed and self.can_move:
+        
+	    for portal in portal_hit_list:
+		print "PORTAL"
+		self.current_room = portal.room
+        
+        if self.rightKeyPressed and self.can_move:
             self.rect.x += self.walk_rate
             self.image = self.walk_right_animation[self.current_frame]
 
             roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
             wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
+	    
+	    portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False, collided=pygame.sprite.collide_rect_ratio(1))
 
             for wall in wall_hit_list:
                 self.rect.right = wall.rect.left + 63
 
             for roof in roof_hit_list:
                 self.rect.right = roof.rect.left + 63
+
+	    for portal in portal_hit_list:
+		print "PORTAL"
+		self.current_room = portal.room
 
         if self.invuln_frames != 0:
             self.invuln_frames -= 1
@@ -176,45 +201,98 @@ class Hero(pygame.sprite.Sprite):
             self.current_frame = (self.current_frame + 1) % 4
             self.ticker = 0
 
-    def attack(self):    
-        if self.DIRECTION == self.RIGHT:
-            self.sword = Sword(self.rect.x + 30, self.rect.y)
-        elif self.DIRECTION == self.LEFT:
-            self.sword = Sword(self.rect.x - 30, self.rect.y)
-        elif self.DIRECTION == self.UP:
-            self.sword = Sword(self.rect.y - 30, self.rect.y)
-        elif self.DIRECTION == self.DOWN:
-            self.sword = Sword(self.rect.y + 30, self.rect.y)
+    def initiate_attack(self):
+	   self.can_move = False
+           self.can_attack = False
+           self.attack_timer = 15
 
-        sword = pygame.sprite.GroupSingle(self.sword)    
-        mob_hit_list = pygame.sprite.groupcollide(self.mobs, sword, False, False)
+    def attack(self):                         
+	
+	#perform attack animation    
+	if self.attack_timer > 0:
+            print "timer", self.attack_timer
+            
+	    #every 5 frames change the animation
+	    if self.attack_timer % 5 == 0:
 
-        for mob in mob_hit_list:
-            mob.hp -= self.sword.damage
-            if mob.hp <= 0:
-                mob.kill()
-                     
-        if self.attack_timer > 0:
-            print self.attack_timer
-            if (self.attack_timer + 1) % 5 == 0:
-                #print "ANIMATION ", (len(self.attack_right_animation) - ((self.attack_timer + 1)/5))
+		print "animation", (len(self.attack_right_animation) - (self.attack_timer/5))
+
                 if self.DIRECTION == self.RIGHT:
-                    self.image = self.attack_right_animation[len(self.attack_right_animation) - ((self.attack_timer + 1)/5)]
-                if self.DIRECTION == self.LEFT:
-                    self.image = self.attack_left_animation[len(self.attack_left_animation) - ((self.attack_timer + 1)/5)]
-                if self.DIRECTION == self.UP:
-                    self.image = self.attack_up_animation[len(self.attack_up_animation) - ((self.attack_timer + 1)/5)]
-                if self.DIRECTION == self.DOWN:
-                    self.image = self.attack_down_animation[len(self.attack_down_animation) - ((self.attack_timer + 1)/5)]
-            self.attack_timer -= 1
 
+			#change animation to next frame
+                	self.image = self.attack_right_animation[len(self.attack_right_animation) - ((self.attack_timer)/5)]
+
+			#damage enemies that are in range, if on attack frame			
+			if len(self.attack_right_animation) - ((self.attack_timer)/5) == 2:
+			    self.sword = Sword(self.rect.x + 30, self.rect.y)
+		
+			    sword = pygame.sprite.GroupSingle(self.sword)
+			    mob_hit_list = pygame.sprite.groupcollide(self.mobs, sword, False, False)
+
+			    for mob in mob_hit_list:
+				mob.take_damage(self.sword.damage, self)
+				
+
+                if self.DIRECTION == self.LEFT:
+
+			#change animation to next frame
+                 	self.image = self.attack_left_animation[len(self.attack_left_animation) - ((self.attack_timer)/5)]
+              		
+			#damage enemies that are in range, if on attack frame		
+			if len(self.attack_left_animation) - ((self.attack_timer)/5) == 2:
+			    self.rect.x -= 19
+
+			    self.sword = Sword(self.rect.x - 30, self.rect.y)
+		
+			    sword = pygame.sprite.GroupSingle(self.sword)
+			    mob_hit_list = pygame.sprite.groupcollide(self.mobs, sword, False, False)
+
+			    for mob in mob_hit_list:
+				mob.take_damage(self.sword.damage, self)
+
+		if self.DIRECTION == self.UP:
+
+			#change animation to next frame
+             		self.image = self.attack_up_animation[len(self.attack_up_animation) - ((self.attack_timer)/5)]
+                	
+			#damage enemies that are in range, if on attack frame
+			if len(self.attack_up_animation) - ((self.attack_timer)/5) == 2:
+			    self.rect.y -= 19
+
+			    self.sword = Sword(self.rect.x, self.rect.y - 30)		
+
+			    sword = pygame.sprite.GroupSingle(self.sword)
+			    mob_hit_list = pygame.sprite.groupcollide(self.mobs, sword, False, False)
+
+			    for mob in mob_hit_list:
+				mob.take_damage(self.sword.damage, self)
+		
+		if self.DIRECTION == self.DOWN:
+
+			#change animation to next frame
+                	self.image = self.attack_down_animation[len(self.attack_down_animation) - ((self.attack_timer)/5)]
+
+			#damage enemies that are in range, if on attack frame
+			if len(self.attack_down_animation) - ((self.attack_timer)/5) == 2:
+			    self.sword = Sword(self.rect.x, self.rect.y + 30)
+	
+			    sword = pygame.sprite.GroupSingle(self.sword)
+			    mob_hit_list = pygame.sprite.groupcollide(self.mobs, sword, False, False)
+
+			    for mob in mob_hit_list:
+				mob.take_damage(self.sword.damage, self)
+		            
+	    self.attack_timer -= 1
+	#attack finished; put back to standing position
         elif self.attack_timer == 0:
             if self.DIRECTION == self.RIGHT:
                 self.image = self.walk_right_animation[0]
             if self.DIRECTION == self.LEFT:
                 self.image = self.walk_left_animation[0]
+		self.rect.x += 19
             if self.DIRECTION == self.UP:
                 self.image = self.walk_up_animation[0]
+		self.rect.y += 19
             if self.DIRECTION == self.DOWN:
                 self.image = self.walk_down_animation[0]
                     
@@ -222,6 +300,9 @@ class Hero(pygame.sprite.Sprite):
             self.can_attack = True
             self.attack_timer = -1
             self.sword = None
+
+    def remove_mob_with_id(self, id):
+	   del self.current_room.mobs[id]
 
 class Sword(pygame.sprite.Sprite):
     def __init__(self, x, y):

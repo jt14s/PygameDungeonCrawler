@@ -41,12 +41,21 @@ class TorchBrick(MapTile):
         elif self.ticker % 8 == 0:
             self.current_frame += 1
 
+class Portal(MapTile):
+    def __init__(self, x, y, image, room):
+        MapTile.__init__(self, x, y, image)
+	self.room = room
+
 
 class Room(object):
     wall_list = None
     floor_list = None
-    item_list = None
+    roof_list = None
     mob_list = None
+    item_list = None
+    key_list = None
+    lock_list = None
+    portal_list = None
 
     def __init__(self):
         self.wall_list = pygame.sprite.Group()
@@ -56,8 +65,13 @@ class Room(object):
         self.item_list = pygame.sprite.Group()
         self.key_list = pygame.sprite.Group()
         self.lock_list = pygame.sprite.Group()
+
+	self.portal_list = pygame.sprite.Group()
         
 class Room1(Room):
+
+    mobs = [ShrimpMob(816, 136, 0)]
+
     def __init__(self):
         Room.__init__(self)
 
@@ -78,28 +92,16 @@ class Room1(Room):
         exits = []
         
         items = [Rope('rope', RopeImg, 544, 340), Rope('rope', RopeImg, 136 + 68 * 3, 340), Bow('bow', BowImg, 68 * 2, 340)]
-        mobs = [ShrimpMob(816, 136)]
         roofs = []
         walls = []
         floors = []
+
+	portals = []
         x, y = 0, 0
-        i = 1
+        i = 1        
         
-        for section in room_layout:
-            for surface in section:
-                if surface == 'R':
-                    roofs.append(Wall(x,y,RoofImgCenterCenter))
-                if surface == 'W':
-                    walls.append(Wall(x,y,WallImg))
-                if surface == 'T':
-                    walls.append(TorchBrick(x,y,TorchImg1))
-                if surface == 'F':
-                    floors.append(Floor(x,y,FloorImgCenter))
-                if surface == 'x':
-                    x = 0
-                else: x += 68
-            y += 68
             
+        
         
         for wall in walls:
             self.wall_list.add(wall)
@@ -113,53 +115,60 @@ class Room1(Room):
         for item in items:
             self.item_list.add(item)
 
-        for mob in mobs:
+        for mob in self.mobs:
             self.mob_list.add(mob)
 
 class Room2(Room):
+    
+    mobs = [ShrimpMob(68 * 2, 68 * 8, 0), ShrimpMob(816 + (68 * 2),68 * 8, 1)]
+
     def __init__(self):
         Room.__init__(self)
 
         room_layout = ['RRRRRRRRRRRRRRRRRRx',
                        'RWWRWWRWWWWRWWRWWRx',
                        'TFFTFFTFFFFTFFTFFTx',
-                       'FFFFFF FFFFFFFFFFFx',
-                       'FFFFFF FFFF FFFFFFx',
-                       'RF RFFRFFFFRFFR FRx',
-                       'R FTFFTFFFFTFFTFFRx',
-                       'RFFFFF FFFF FFFFFRx',
-                       'RFFFFF FFFF FFFFFRx',
+                       '1FFFFFFFFFFFFFFFFFx',
+                       '1FFFFFFFFFFFFFFFFFx',
+                       'RFFRFFRFFFFRFFRFFRx',
+                       'RFFTFFTFFFFTFFTFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
                        'RFFRFFRFFFFRFFRFFRx',
                        'RFFTFFTFFFFTFFTFFRx',
                        'RFFFFFFFFFFFFFFFFRx',
                        'RFFFFFFFFFFFFFFFFRx',
                        'RRRRRRRRRRRRRRRRRRx',]
 
-        #list of other room entrances
-        #              room    coords
-        self.exits = [ [1, [0, 272]],[ 2,[0, 340]]]
-        
         items = []
-        mobs = [ShrimpMob(68 * 2, 68 * 8), ShrimpMob(816 + (68 * 2),68 * 8)]
         roofs = []
         walls = []
         floors = []
+	portals = []
         x, y = 0, 0
         i = 1
         
         for section in room_layout:
-            for surface in section:
-                if surface == 'R':
-                    roofs.append(Wall(x,y,RoofImgCenterCenter))
-                if surface == 'W':
-                    walls.append(Wall(x,y,WallImg))
-                if surface == 'T':
-                    walls.append(TorchBrick(x,y,TorchImg1))
-                if surface == 'F':
-                    floors.append(Floor(x,y,FloorImgCenter))
-                if surface == 'x':
+            for surface in section:                
+		if surface == 'x':
                     x = 0
-                else: x += 68
+                else:
+		    if surface == 'R':
+                        roofs.append(Wall(x,y,RoofImgCenterCenter))
+                    elif surface == 'W':
+                        walls.append(Wall(x,y,WallImg))
+                    elif surface == 'T':
+		        walls.append(TorchBrick(x,y,TorchImg1))
+                    elif surface == 'F':
+                        floors.append(Floor(x,y,FloorImgCenter))
+		    elif surface == '1':
+                        floors.append(Floor(x,y,FloorImgCenter))
+	       	        portals.append(Portal(x, y, ThrownRopeDown, Room1()))
+		    elif surface == '2':
+                        floors.append(Floor(x,y,FloorImgCenter))
+	    	        portals.append(Portal(x, y, ThrownRopeDown, Room2()))    
+		
+		    x += 68
             y += 68
             
         
@@ -175,5 +184,8 @@ class Room2(Room):
         for item in items:
             self.item_list.add(item)
 
-        for mob in mobs:
+        for mob in self.mobs:
             self.mob_list.add(mob)
+
+	for portal in portals:
+	    self.portal_list.add(portal)

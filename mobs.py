@@ -1,8 +1,9 @@
 import pygame, math
 from image_loader import *
+from rooms import *
 
 class Mob(pygame.sprite.Sprite):
-    def __init__(self, image, x, y, hp):
+    def __init__(self, image, x, y, hp, id):
         pygame.sprite.Sprite.__init__(self)
         
         self.image = image
@@ -10,6 +11,7 @@ class Mob(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.hp = hp
+	self.id = id
         self.damage = 20
 
         #this is the bounds to check against
@@ -48,10 +50,19 @@ class Mob(pygame.sprite.Sprite):
                 return True
         return False
 
+    def take_damage(self, damage, hero):
+	self.hp -= damage
+	print "mob took", damage, "damage"
+	if self.hp <= 0:
+	    self.kill()
+	    print "mob", self.id, "ded"
+	    hero.remove_mob_with_id(self.id)
+		            
+
 class ShrimpMob(Mob):
-    def __init__(self, x, y):
+    def __init__(self, x, y, id):
         self.walk1 = pygame.image.load('images/mobs/shrimp/left/walk1.png')
-        Mob.__init__(self, self.walk1, x, y, 100)
+        Mob.__init__(self, self.walk1, x, y, 100, id)
 
         self.walk2 = pygame.image.load('images/mobs/shrimp/left/walk2.png')
 

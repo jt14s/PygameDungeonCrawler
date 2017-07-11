@@ -26,12 +26,12 @@ class GameMain():
         self.clock = pygame.time.Clock()
 
         #create hero and necessary sprite groups
-        self.hero = Hero(68,136,"UP", self.screen)        
+        self.hero = Hero(68,136,"DOWN", self.screen)
         self.all_sprite_list = pygame.sprite.Group()
         self.all_room_tiles = pygame.sprite.Group()
 
         #room variables
-        self.rooms = [Room2(),Room2()]
+        self.rooms = [Room2(),Room1()]
         self.current_x = 0
         self.current_room = self.rooms[self.current_x]
 
@@ -40,6 +40,9 @@ class GameMain():
         self.hero.walls = self.current_room.wall_list
         self.hero.roofs = self.current_room.roof_list
         self.hero.mobs = self.current_room.mob_list
+
+	self.hero.portals = self.current_room.portal_list
+	self.hero.current_room = self.rooms[self.current_x]
 
         #load sprite groups accordingly
         self.all_room_tiles.add(self.current_room.floor_list,self.current_room.wall_list,self.current_room.item_list)
@@ -53,9 +56,36 @@ class GameMain():
         
     def main_loop(self):
         while not self.done:
+	    if self.current_room != self.hero.current_room:
+
+		    #CHANGE THIS WHEN PORTALS ARE ON WALL
+	            self.hero.rect.x = 68
+		    self.hero.rect.y = 136
+
+		    #WHY WON'T SHE SPAWN LOOKING DOWN?????
+		    self.hero.DIRECTION = "DOWN"
+		    self.current_room = self.hero.current_room
+
+		    self.hero.image = self.hero.walk_down_animation[0]
+		    
+		    #access room entities
+		    self.hero.items = self.current_room.item_list
+		    self.hero.walls = self.current_room.wall_list
+		    self.hero.roofs = self.current_room.roof_list
+		    self.hero.mobs = self.current_room.mob_list
+
+		    self.hero.portals = self.current_room.portal_list
+
+		    #load sprite groups accordingly
+		    self.all_room_tiles.empty()
+		    self.all_sprite_list.empty()		
+
+		    self.all_room_tiles.add(self.current_room.floor_list,self.current_room.wall_list,self.current_room.item_list)
+		    self.all_sprite_list.add(self.hero.mobs, self.hero)
+
             self.handle_events()
-            self.draw()
             self.all_sprite_list.update()
+            self.draw()
             self.clock.tick(60)
         
         pygame.quit()
@@ -70,15 +100,17 @@ class GameMain():
         self.current_room.item_list.draw(self.screen)
         self.all_sprite_list.draw(self.screen)
 
-        '''
+        
         for mob in self.current_room.mob_list:
             if mob.look_for_hero(self.hero) == True:
                 mob.follow_hero(self.hero)
-        '''
+        
         
         self.projectiles.draw(self.screen)
         self.projectiles.update()
         
+	self.current_room.portal_list.draw(self.screen)
+
         self.current_room.roof_list.draw(self.screen)
 
         self.current_room.wall_list.update()
@@ -98,109 +130,89 @@ class GameMain():
         for event in events:
             if event.type == pygame.QUIT:
                 self.done = True
-            elif event.type == KEYDOWN and self.hero.can_move == True:
+            elif event.type == KEYDOWN:
+
                 if event.key == K_ESCAPE:
                     self.done = True
                 elif event.key == K_r:
                     obj = GameMain()
                     obj.main_loop()
-
-                #directionals
-                elif event.key == K_UP:
-                    self.hero.upKeyPressed = True
-                    self.hero.downKeyPressed = False
-                    self.hero.DIRECTION = self.hero.UP
-                elif event.key == K_DOWN:
-                    self.hero.downKeyPressed = True
-                    self.hero.upKeyPressed = False
-                    self.hero.DIRECTION = self.hero.DOWN
-                    self.hero.change_y = 5
-                elif event.key == K_LEFT:
-                    self.hero.leftKeyPressed = True
-                    self.hero.rightKeyPressed = False
-                    self.hero.DIRECTION = self.hero.LEFT
-                elif event.key == K_RIGHT:
-                    self.hero.rightKeyPressed = True
-                    self.hero.leftKeyPressed = False
-                    self.hero.DIRECTION = self.hero.RIGHT
+		elif self.hero.can_move == True:
+		        #directionals
+		        if event.key == K_UP:
+		            self.hero.upKeyPressed = True
+		            self.hero.downKeyPressed = False
+		            self.hero.DIRECTION = self.hero.UP
+		        if event.key == K_DOWN:
+		            self.hero.downKeyPressed = True
+		            self.hero.upKeyPressed = False
+		            self.hero.DIRECTION = self.hero.DOWN
+		        if event.key == K_LEFT:
+		            self.hero.leftKeyPressed = True
+		            self.hero.rightKeyPressed = False
+		            self.hero.DIRECTION = self.hero.LEFT
+		        if event.key == K_RIGHT:
+		            self.hero.rightKeyPressed = True
+		            self.hero.leftKeyPressed = False
+		            self.hero.DIRECTION = self.hero.RIGHT
 
                 #fix the attack animation
-                elif event.key == K_SPACE and self.hero.can_attack:
-                    print 'space pressed'
-                    self.hero.spacePressed = True
-                    self.hero.can_move = False
-                    self.can_attack = False
-                    self.hero.attack_timer = 15
+                if self.hero.can_attack == True:
+			#physical attack
+			if event.key == K_SPACE:
+	                    self.hero.spacePressed = True
+			    self.hero.initiate_attack()
 
-                    #self.hero.old_rect = self.hero.walk_right_animation[0].get_rect()       #save the old hitbox
-                    #self.hero.rect = self.hero.attack_right_animation[2].get_rect()         #set new hitbox as extended one
-                    
-                #items
-                if event.key == K_1 and self.hero.inventory.slots[0][1] != 'empty':
-                    self.hero.oneKeyPressed = True
-                    
-                    if self.hero.inventory.slots[0][0].item_name == 'rope':
-                        thrown_rope = ThrownRope(self.hero.rect.x + 30, self.hero.rect.y + 30, self.hero.DIRECTION, self.hero.walls, self.hero.roofs, self.hero.mobs)
-                        self.projectiles.add(thrown_rope)
+		        #items
+		        elif event.key == K_1 and self.hero.inventory.slots[0][1] != 'empty':
+		            self.hero.oneKeyPressed = True
+		            
+			    if self.hero.inventory.slots[0][0].item_name == 'rope':
+		                thrown_rope = ThrownRope(self.hero.rect.x + 30, self.hero.rect.y + 30, self.hero.DIRECTION, self.hero.walls, self.hero.roofs, self.hero.mobs)
+		                self.projectiles.add(thrown_rope)
 
-                    elif self.hero.inventory.slots[0][0].item_name == 'bow':
-                        shot_arrow = Arrow(self.hero.rect.x + 30, self.hero.rect.y + 30, self.hero.DIRECTION, self.hero.walls, self.hero.roofs, self.hero.mobs)
-                        self.projectiles.add(shot_arrow)
+		            elif self.hero.inventory.slots[0][0].item_name == 'bow':
+		                shot_arrow = Arrow(self.hero.rect.x + 30, self.hero.rect.y + 30, self.hero.DIRECTION, self.hero.walls, self.hero.roofs, self.hero.mobs)
+		                self.projectiles.add(shot_arrow)
 
-                elif event.key == K_2 and self.hero.inventory.slots[1][1] != 'empty':
-                    self.hero.twoKeyPressed = True
-                    if self.hero.inventory.slots[1][0].item_name == 'rope':
-                        thrown_rope = ThrownRope(self.hero.rect.x + 30, self.hero.rect.y + 30, self.hero.DIRECTION, self.hero.walls, self.hero.roofs, self.hero.mobs)
-                        self.projectiles.add(thrown_rope)
-                        
-            elif event.type == KEYUP and self.hero.can_move == True:
-                if event.key == K_UP:
-                    self.hero.upKeyPressed = False
-                    
-                    if self.hero.rightKeyPressed:
-                        self.hero.DIRECTION = self.hero.RIGHT
-                        
-                    elif self.hero.leftKeyPressed:
-                        self.hero.DIRECTION = self.hero.LEFT
-                        
-                elif event.key == K_DOWN:
-                    self.hero.downKeyPressed = False
-                    if self.hero.rightKeyPressed:
-                        self.hero.DIRECTION = self.hero.RIGHT
-                        
-                    elif self.hero.leftKeyPressed:
-                        self.hero.DIRECTION = self.hero.LEFT
-                        
-                elif event.key == K_LEFT:
-                    self.hero.image = self.hero.walk_left_animation[0]
-                    self.hero.leftKeyPressed = False
-                    
-                    if self.hero.upKeyPressed:
-                        self.hero.DIRECTION = self.hero.UP
-                        
-                    elif self.hero.downKeyPressed:
-                        self.hero.image = self.hero.walk_down_animation[0]
-                        self.hero.DIRECTION = self.hero.DOWN
-                        
-                elif event.key == K_RIGHT:                   
-                    self.hero.image = self.hero.walk_right_animation[0]                  
-                    self.hero.rightKeyPressed = False
-                    
-                    if self.hero.upKeyPressed:
-                        self.hero.DIRECTION = self.hero.UP
-                        
-                    elif self.hero.downKeyPressed:
-                        self.hero.DIRECTION = self.hero.DOWN
+		        elif event.key == K_2 and self.hero.inventory.slots[1][1] != 'empty':
+		            self.hero.twoKeyPressed = True
+		            
+			    if self.hero.inventory.slots[1][0].item_name == 'rope':
+		                thrown_rope = ThrownRope(self.hero.rect.x + 30, self.hero.rect.y + 30, self.hero.DIRECTION, self.hero.walls, self.hero.roofs, self.hero.mobs)
+		                self.projectiles.add(thrown_rope)
+			    
+		            elif self.hero.inventory.slots[1][0].item_name == 'bow':
+		                shot_arrow = Arrow(self.hero.rect.x + 30, self.hero.rect.y + 30, self.hero.DIRECTION, self.hero.walls, self.hero.roofs, self.hero.mobs)
+		                self.projectiles.add(shot_arrow)
+		                
+            elif event.type == KEYUP:
 
-                elif event.key == K_SPACE:
-                    self.hero.spacePressed = False
+		        if event.key == K_UP:
+		            self.hero.upKeyPressed = False
+		             
+		        elif event.key == K_DOWN:
+		            self.hero.downKeyPressed = False
+		                
+		        elif event.key == K_LEFT:
+			    self.hero.leftKeyPressed = False
+		                
+		        elif event.key == K_RIGHT:                   
+			    self.hero.rightKeyPressed = False
+		            
+                	if event.key == K_SPACE:
+	               	     self.hero.spacePressed = False
 
-                if event.key == K_1:
-                    self.hero.oneKeyPressed = False
+	                if event.key == K_1:
+	                    self.hero.oneKeyPressed = False
 
-                if event.key == K_2:
-                    self.hero.twoKeyPressed = False
-               
+	                if event.key == K_2:
+	                    self.hero.twoKeyPressed = False
+
+    def next_room(self):
+	self.current_x += 1
+	self.current_room = self.rooms[current_x]
+
 if __name__ == "__main__":
     game = GameMain()
     game.main_loop()
