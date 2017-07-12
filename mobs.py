@@ -62,7 +62,7 @@ class Mob(pygame.sprite.Sprite):
 
 class ShrimpMob(Mob):
     def __init__(self, x, y, id):
-        self.walk1 = ShrimpWalkLeft1
+        self.walk1 = ShrimpWalkL1
         Mob.__init__(self, self.walk1, x, y, 100, id)
 
         self.aggro1 = pygame.image.load('images/mobs/shrimp/walk/left/aggro1.png')
