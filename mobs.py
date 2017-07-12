@@ -70,7 +70,7 @@ class ShrimpMob(Mob):
 
         #add the rest of the animations here
 
-        self.neutral_animation = [ShrimpWalkLeft1, ShrimpWalkLeft2]
+        self.neutral_animation = [ShrimpWalkL1, ShrimpWalkL2]
         self.aggro_animation = [self.aggro1, self.aggro2]
 
         self.speed = 5
