@@ -62,15 +62,15 @@ class Mob(pygame.sprite.Sprite):
 
 class ShrimpMob(Mob):
     def __init__(self, x, y, id):
-        self.walk1 = pygame.image.load('images/mobs/shrimp/left/walk1.png')
+        self.walk1 = ShrimpWalkLeft1
         Mob.__init__(self, self.walk1, x, y, 100, id)
 
-        self.walk2 = pygame.image.load('images/mobs/shrimp/left/walk2.png')
+        self.aggro1 = pygame.image.load('images/mobs/shrimp/walk/left/aggro1.png')
+        self.aggro2 = pygame.image.load('images/mobs/shrimp/walk/left/aggro2.png')
 
-        self.aggro1 = pygame.image.load('images/mobs/shrimp/left/aggro1.png')
-        self.aggro2 = pygame.image.load('images/mobs/shrimp/left/aggro2.png')
+        #add the rest of the animations here
 
-        self.neutral_animation = [self.walk1, self.walk2]
+        self.neutral_animation = [ShrimpWalkLeft1, ShrimpWalkLeft2]
         self.aggro_animation = [self.aggro1, self.aggro2]
 
         self.speed = 5
