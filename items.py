@@ -16,10 +16,6 @@ class Rope(Item):
     def __init__(self, name, image, x, y):
         Item.__init__(self, name, image, x, y)
 
-class Bow(Item):
-    def __init__(self, name, image, x, y):
-        Item.__init__(self, name, image, x, y)
-
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, walls, roofs, mobs):
         pygame.sprite.Sprite.__init__(self)
@@ -34,14 +30,17 @@ class Projectile(pygame.sprite.Sprite):
         self.mobs = mobs
 
     def update(self):
-        if self.direction == 'right':
+        if self.direction == 'RIGHT':
             self.rect.x += self.speed
-        elif self.direction == 'left':
-            self.rect -= self.speed
-        elif self.direction == 'down':
+        elif self.direction == 'LEFT':
+            self.rect.x -= self.speed
+        elif self.direction == 'DOWN':
             self.rect.y += self.speed
-        elif self.direction == 'up':
+        elif self.direction == 'UP':
             self.rect.y -= self.speed
+
+        if self.rect.x < 0 or self.rect.x > 1224 or self.rect.y < 0 or self.rect.y > 952:
+            self.kill()
 
         projectile = pygame.sprite.GroupSingle(self)
         wall_hit_list = pygame.sprite.groupcollide(self.walls, projectile, False, True)
@@ -54,14 +53,15 @@ class Projectile(pygame.sprite.Sprite):
 
 class ThrownRope(Projectile):
     def __init__(self, x, y, direction, walls, roofs, mobs):
-        if direction == 'down' or direction == 'up':
+        if direction == 'DOWN' or direction == 'UP':
             self.image = ThrownRopeDown
-        self.speed = 18
-        Projectile.__init__(self, x, y, direction, walls, roofs, mobs)
 
-class Arrow(Projectile):
-    def __init__(self, x, y, direction, walls, roofs, mobs):
-        if direction == 'down' or direction == 'up':
+        elif direction == 'LEFT' or direction == 'RIGHT':
             self.image = ThrownRopeDown
-        self.speed = 30
-        Projectile.__init__(self, x, y, direction, walls, roofs, mobs)
+
+        self.speed = 18
+
+        if direction == 'UP':
+            Projectile.__init__(self, x, y - 60, direction, walls, roofs, mobs)
+        else:
+            Projectile.__init__(self, x, y, direction, walls, roofs, mobs)    

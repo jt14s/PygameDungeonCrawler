@@ -11,6 +11,8 @@ class Mob(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.ORIG_X = x
+        self.ORIG_Y = y
         self.hp = hp
         self.id = id
         self.damage = 20
@@ -26,21 +28,24 @@ class Mob(pygame.sprite.Sprite):
         direction_x = Hero.rect.x - self.rect.x
         direction_y = Hero.rect.y - self.rect.y
         direction = math.hypot(direction_x, direction_y)
-        direction_x /= direction
-        direction_y /= direction
+        if direction != 0:
+            direction_x /= direction
+            direction_y /= direction
 
-        self.rect.x += self.speed * direction_x
-        self.rect.y += self.speed * direction_y
+            self.rect.x += self.speed * direction_x
+            self.rect.y += self.speed * direction_y
 
     # does something but not sure what, kind of moves you in a random direction
     def move_to_coordinate(self, destination_x=0, destination_y=0):
         direction_x = destination_x - self.rect.x
         direction_y = destination_y - self.rect.y
         direction = math.hypot(direction_x, direction_y)
-        direction_x /= direction
-        direction_y /= direction
-        self.rect.x += self.speed * direction_x
-        self.rect.y += self.speed * direction_y
+
+        if direction != 0:
+            direction_x /= direction
+            direction_y /= direction
+            self.rect.x += self.speed * direction_x
+            self.rect.y += self.speed * direction_y
 
     def look_for_hero(self, Hero):
         print "LOOKING FOR HERO"

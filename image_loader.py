@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 
 #######################################################################################################
 #Pink character images ################################################################################
@@ -76,7 +77,6 @@ TorchImg8 = pygame.image.load('images/level1/wall_torch/walltorch4.png')
 #items
 RopeImg = pygame.image.load('images/items/rope/rope.png')
 ThrownRopeDown = pygame.image.load('images/items/rope/throwndown1.png')
-BowImg = pygame.image.load('images/items/bow/bow.png')
 
 #######################################################################################################
 #HUD Images ###########################################################################################
@@ -119,3 +119,27 @@ ShrimpAttackL3 = pygame.image.load('images/mobs/shrimp/attack/left/attack3.png')
 ShrimpAttackR1 = pygame.image.load('images/mobs/shrimp/attack/right/attack1.png')
 ShrimpAttackR2 = pygame.image.load('images/mobs/shrimp/attack/right/attack2.png')
 ShrimpAttackR3 = pygame.image.load('images/mobs/shrimp/attack/right/attack3.png')
+
+#######################################################################################################
+#Menu Images ##########################################################################################
+#######################################################################################################
+
+#logo and background
+GameLogo = pygame.image.load('images/menu/splash/logo.png')
+
+MenuSplash1 = pygame.image.load('images/menu/splash/bg1.png')
+MenuSplash2 = pygame.image.load('images/menu/splash/bg2.png')
+MenuSplash3 = pygame.image.load('images/menu/splash/bg3.png')
+MenuSplash4 = pygame.image.load('images/menu/splash/bg4.png')
+MenuSplash5 = pygame.image.load('images/menu/splash/bg5.png')
+MenuSplash6 = pygame.image.load('images/menu/splash/bg6.png')
+
+#buttons
+SingleplayerButton = pygame.image.load('images/menu/buttons/single.png')
+MultiplayerButton = pygame.image.load('images/menu/buttons/multi.png')
+
+PlayButton = pygame.image.load('images/menu/buttons/play.png')
+PlayButtonHover = pygame.image.load('images/menu/buttons/playhover.png')
+
+#portraits
+PaladinPortrait = pygame.image.load('images/menu/portraits/paladin.png')

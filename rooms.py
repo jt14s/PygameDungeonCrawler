@@ -48,10 +48,9 @@ class TorchBrick(MapTile):
 
 
 class Portal(MapTile):
-    def __init__(self, x, y, image, room):
+    def __init__(self, x, y, image, room_x):
         MapTile.__init__(self, x, y, image)
-        self.room = room
-
+        self.room_x = room_x
 
 class Room(object):
     wall_list = None
@@ -95,60 +94,13 @@ class Room1(Room):
                        'RFFRRRRFFFFFFFFFFRx',
                        'RFFRRRRFFFFFFFFFFRx',
                        'RRRRRRRRRRRRRRRRRRx', ]
-        exits = []
-
-        items = [Rope('rope', RopeImg, 544, 340), Rope('rope', RopeImg, 136 + 68 * 3, 340),
-                 Bow('bow', BowImg, 68 * 2, 340)]
+        
+        items = [Rope('rope', RopeImg, 544, 340), Rope('rope', RopeImg, 136 + 68 * 3, 340)]
         roofs = []
         walls = []
         floors = []
 
-        portals = []
-        x, y = 0, 0
-        i = 1
-
-        for wall in walls:
-            self.wall_list.add(wall)
-
-        for roof in roofs:
-            self.roof_list.add(roof)
-
-        for floor in floors:
-            self.floor_list.add(floor)
-
-        for item in items:
-            self.item_list.add(item)
-
-        for mob in self.mobs:
-            self.mob_list.add(mob)
-
-
-class Room2(Room):
-    mobs = [ShrimpMob(68 * 2, 68 * 8, 0), ShrimpMob(816 + (68 * 2), 68 * 8, 1)]
-
-    def __init__(self):
-        Room.__init__(self)
-
-        room_layout = ['RRRRRRRRRRRRRRRRRRx',
-                       'RWWRWWRWWWWRWWRWWRx',
-                       'TFFTFFTFFFFTFFTFFTx',
-                       '1FFFFFFFFFFFFFFFFFx',
-                       '1FFFFFFFFFFFFFFFFFx',
-                       'RFFRFFRFFFFRFFRFFRx',
-                       'RFFTFFTFFFFTFFTFFRx',
-                       'RFFFFFFFFFFFFFFFFRx',
-                       'RFFFFFFFFFFFFFFFFRx',
-                       'RFFRFFRFFFFRFFRFFRx',
-                       'RFFTFFTFFFFTFFTFFRx',
-                       'RFFFFFFFFFFFFFFFFRx',
-                       'RFFFFFFFFFFFFFFFFRx',
-                       'RRRRRRRRRRRRRRRRRRx', ]
-
-        items = []
-        roofs = []
-        walls = []
-        floors = []
-        portals = []
+        portals = [Portal(1224, 68 * 3, WallImg, 1), Portal(1224, 68 * 4, WallImg, 1)]
         x, y = 0, 0
         i = 1
 
@@ -165,12 +117,71 @@ class Room2(Room):
                         walls.append(TorchBrick(x, y, TorchImg1))
                     elif surface == 'F':
                         floors.append(Floor(x, y, FloorImgCenter))
-                    elif surface == '1':
+
+                    x += 68
+            y += 68
+
+        for wall in walls:
+            self.wall_list.add(wall)
+
+        for roof in roofs:
+            self.roof_list.add(roof)
+
+        for floor in floors:
+            self.floor_list.add(floor)
+
+        for item in items:
+            self.item_list.add(item)
+
+        for mob in self.mobs:
+            self.mob_list.add(mob)
+
+        for portal in portals:
+            self.portal_list.add(portal)
+
+
+class Room2(Room):
+    mobs = [ShrimpMob(68 * 2, 68 * 8, 0), ShrimpMob(816 + (68 * 2), 68 * 8, 1)]
+
+    def __init__(self):
+        Room.__init__(self)
+
+        room_layout = ['RRRRRRRRRFRRRRRRRRx',
+                       'RWWRWWRWWFWRWWRWWRx',
+                       'TFFTFFTFFFFTFFTFFTx',
+                       'FFFFFFFFFFFFFFFFFFx',
+                       'FFFFFFFFFFFFFFFFFFx',
+                       'RFFRFFRFFFFRFFRFFRx',
+                       'RFFTFFTFFFFTFFTFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'RFFRFFRFFFFRFFRFFRx',
+                       'RFFTFFTFFFFTFFTFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'RRRRRRRRRFRRRRRRRRx', ]
+
+        items = []
+        roofs = []
+        walls = []
+        floors = []
+        portals = [Portal(-68, 204, WallImg, 0), Portal(-68, 272, WallImg, 0), Portal(1224, 204, WallImg, 2), Portal(1224, 272, WallImg, 2), Portal(612, -68, WallImg, 3), Portal(612, 1020, WallImg, 4)]
+        x, y = 0, 0
+        i = 1
+
+        for section in room_layout:
+            for surface in section:
+                if surface == 'x':
+                    x = 0
+                else:
+                    if surface == 'R':
+                        roofs.append(Wall(x, y, RoofImgCenterCenter))
+                    elif surface == 'W':
+                        walls.append(Wall(x, y, WallImg))
+                    elif surface == 'T':
+                        walls.append(TorchBrick(x, y, TorchImg1))
+                    elif surface == 'F':
                         floors.append(Floor(x, y, FloorImgCenter))
-                        portals.append(Portal(x, y, ThrownRopeDown, Room1()))
-                    elif surface == '2':
-                        floors.append(Floor(x, y, FloorImgCenter))
-                        portals.append(Portal(x, y, ThrownRopeDown, Room2()))
 
                     x += 68
             y += 68
