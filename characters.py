@@ -381,7 +381,11 @@ class Hero(pygame.sprite.Sprite):
             self.sword = None
 
     def remove_mob_with_id(self, id):
-        del self.current_room.mobs[id]
+        i = 0
+        for mob in self.current_room.mobs:
+            if mob.id == id:
+                del self.current_room.mobs[i]
+            i = i + 1
 
     def read_buffer(self):
         if self.buffer != None:

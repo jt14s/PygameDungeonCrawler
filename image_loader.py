@@ -103,6 +103,10 @@ ShrimpWalkL2 = pygame.image.load('images/mobs/shrimp/walk/left/walk2.png')
 ShrimpWalkR1 = pygame.image.load('images/mobs/shrimp/walk/right/walk1.png')
 ShrimpWalkR2 = pygame.image.load('images/mobs/shrimp/walk/right/walk2.png')
 
+#shrimp aggro images
+ShrimpAggroLeft1 = pygame.image.load('images/mobs/shrimp/walk/left/aggro1.png')
+ShrimpAggroLeft2 = pygame.image.load('images/mobs/shrimp/walk/left/aggro2.png')
+
 #shrimp attack images
 ShrimpAttackU1 = pygame.image.load('images/mobs/shrimp/attack/up/attack1.png')
 ShrimpAttackU2 = pygame.image.load('images/mobs/shrimp/attack/up/attack2.png')

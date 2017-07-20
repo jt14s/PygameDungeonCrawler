@@ -14,11 +14,6 @@ class GameMain():
     def __init__(self, character = 'P', width=1224, height=952):
         pygame.init()
 
-        # background color
-        self.color_x = 0
-        self.color_y = 0
-        self.color_z = 0
-
         # set screen variables
         self.width, self.height = width, height
         pygame.display.set_caption("Maiden Hearts")
@@ -50,8 +45,11 @@ class GameMain():
         self.hero.walls = self.current_room.wall_list
         self.hero.roofs = self.current_room.roof_list
         self.hero.mobs = self.current_room.mob_list
-
         self.hero.portals = self.current_room.portal_list
+
+        for mob in self.current_room.mob_list:
+            mob.walls = self.hero.walls
+            mob.roofs = self.hero.roofs
 
         # load sprite groups accordingly
         self.all_room_tiles.add(self.current_room.floor_list, self.current_room.wall_list, self.current_room.item_list)
@@ -102,16 +100,15 @@ class GameMain():
         if self.hero.hp <= 0:
             self.all_sprite_list.remove(self.hero)
 
-        self.screen.fill((self.color_x, self.color_y, self.color_z))
         self.all_room_tiles.draw(self.screen)
         self.current_room.item_list.draw(self.screen)
         self.all_sprite_list.draw(self.screen)
 
-        '''
+
         for mob in self.current_room.mob_list:
             if mob.look_for_hero(self.hero) == True:
                 mob.follow_hero(self.hero)
-        '''
+
 
         self.hero.projectiles.draw(self.screen)
         self.hero.projectiles.update()
