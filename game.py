@@ -11,7 +11,7 @@ from rooms import *
 class GameMain():
     done = False
 
-    def __init__(self, character = 'P', width=1224, height=952):
+    def __init__(self, character = 'PL', width=1224, height=952):
         pygame.init()
 
         # set screen variables
@@ -21,14 +21,14 @@ class GameMain():
         self.clock = pygame.time.Clock()
 
         # create hero and necessary sprite groups
-        if character == 'P':
+        if character == 'PL':
             self.hero = Paladin(68, 136, "DOWN", self.screen)
-        elif character == 'W':
+        elif character == 'WZ':
             self.hero = Wizard(68, 136, "DOWN", self.screen)
-        elif character == 'A':
+        elif character == 'AL':
             self.hero = Alien(68, 136, "DOWN", self.screen)
-        elif character == 'F':
-            self.hero = Fighter(68, 136, "DOWN", self.screen)
+        elif character == 'AS':
+            self.hero = Assassin(68, 136, "DOWN", self.screen)
 
         self.all_sprite_list = pygame.sprite.Group()
         self.all_room_tiles = pygame.sprite.Group()

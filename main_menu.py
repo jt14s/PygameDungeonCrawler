@@ -17,7 +17,7 @@ class Sprite(pygame.sprite.Sprite):
 # for use in sprite collision on cursor location
 class CursorLocation(Sprite):
     def __init__(self, coords):
-        Sprite.__init__(self, pygame.image.load('images/cursor.png'), coords[0], coords[1])
+        Sprite.__init__(self, pygame.image.load('images/interface/cursor.png'), coords[0], coords[1])
 
 # to create menu buttons
 class Button(Sprite):
@@ -61,7 +61,7 @@ class MainMenu(object):
         self.done = False
         self.button_down = False
         self.start_game = False
-        self.character_choice = 'P'
+        self.character_choice = 'PL'
 
         # set screen variables
         self.width, self.height = width, height
@@ -84,8 +84,10 @@ class MainMenu(object):
         self.menu_buttons.add(self.single_mode_button, self.multi_mode_button)
 
         # char select group
-        self.character_portraits = [Portrait(PaladinPortrait, 80, height/3.5, 'P'), Portrait(PaladinPortrait, 80 + 270, height/3.5, 'W'),
-                                    Portrait(PaladinPortrait, 80 + 270 * 2, height/3.5, 'A'), Portrait(PaladinPortrait, 80 + 270 * 3, height/3.5, 'F')]
+        self.character_portraits = [Portrait(PaladinPortrait, 80, height/3.5, 'PL'), Portrait(AssassinPortrait, 80 + 270, height/3.5, 'AS'),
+                                    Portrait(WizardPortrait, 80 + 270 * 2, height/3.5, 'WZ'), Portrait(AlienPortrait, 80 + 270 * 3, height/3.5, 'AL')]
+        self.selector = Selector(PortraitSelector, 80, height/3.5)
+        self.selector_group = pygame.sprite.Group()
 
     def main_loop(self):
         while not self.done:
@@ -121,6 +123,9 @@ class MainMenu(object):
                             self.menu_ui.remove(self.logo)
                             self.menu_buttons.add(self.start_game_button)
 
+                            self.selector_group.add(self.selector)
+
+
                             for portrait in self.character_portraits:
                                 self.menu_buttons.add(portrait)
 
@@ -129,6 +134,7 @@ class MainMenu(object):
 
                         if isinstance(button, Portrait):
                             self.character_choice = button.character_choice
+                            self.selector.rect.x = button.rect.x
                             print self.character_choice
 
             if event.type == pygame.MOUSEBUTTONUP and self.button_down:
@@ -144,23 +150,22 @@ class MainMenu(object):
         self.menu_ui.draw(self.screen)
         self.menu_buttons.draw(self.screen)
         self.menu_ui.update()
+        self.selector_group.draw(self.screen)
         
         pygame.display.flip()
 
     def clean(self):
-        self.menu_buttons.empty()
-        self.menu_ui.empty()
         del self.background
         del self.logo
         del self.menu_ui
-        
         del self.single_mode_button
         del self.multi_mode_button
         del self.start_game_button
-        del self.menu_buttons
-        
+        del self.menu_buttons    
         del self.character_portraits
         del self.character_choice
+        del self.selector
+        del self.selector_group
 
 if __name__ == "__main__":
     menu = MainMenu()

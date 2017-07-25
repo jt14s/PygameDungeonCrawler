@@ -2,42 +2,92 @@ import pygame
 from pygame.locals import *
 
 #######################################################################################################
-#Pink character images ################################################################################
+#Paladin character images #############################################################################
 #######################################################################################################
 
 #walk images
-PinkR1 = pygame.image.load('images/pink/walk/right/right1.png')
-PinkR2 = pygame.image.load('images/pink/walk/right/right2.png')
-PinkR3 = pygame.image.load('images/pink/walk/right/right3.png')
+PaladinR1 = pygame.image.load('images/characters/paladin/walk/right/right1.png')
+PaladinR2 = pygame.image.load('images/characters/paladin/walk/right/right2.png')
+PaladinR3 = pygame.image.load('images/characters/paladin/walk/right/right3.png')
 
-PinkL1 = pygame.image.load('images/pink/walk/left/left1.png')
-PinkL2 = pygame.image.load('images/pink/walk/left/left2.png')
-PinkL3 = pygame.image.load('images/pink/walk/left/left3.png')
+PaladinL1 = pygame.image.load('images/characters/paladin/walk/left/left1.png')
+PaladinL2 = pygame.image.load('images/characters/paladin/walk/left/left2.png')
+PaladinL3 = pygame.image.load('images/characters/paladin/walk/left/left3.png')
 
-PinkU1 = pygame.image.load('images/pink/walk/up/up1.png')
-PinkU2 = pygame.image.load('images/pink/walk/up/up2.png')
-PinkU3 = pygame.image.load('images/pink/walk/up/up3.png')
+PaladinU1 = pygame.image.load('images/characters/paladin/walk/up/up1.png')
+PaladinU2 = pygame.image.load('images/characters/paladin/walk/up/up2.png')
+PaladinU3 = pygame.image.load('images/characters/paladin/walk/up/up3.png')
         
-PinkD1 = pygame.image.load('images/pink/walk/down/down1.png')
-PinkD2 = pygame.image.load('images/pink/walk/down/down2.png')
-PinkD3 = pygame.image.load('images/pink/walk/down/down3.png')
+PaladinD1 = pygame.image.load('images/characters/paladin/walk/down/down1.png')
+PaladinD2 = pygame.image.load('images/characters/paladin/walk/down/down2.png')
+PaladinD3 = pygame.image.load('images/characters/paladin/walk/down/down3.png')
 
 #attack images
-PinkAttackR1 = pygame.image.load('images/pink/attack/right/attack1.png')
-PinkAttackR2 = pygame.image.load('images/pink/attack/right/attack2.png')
-PinkAttackR3 = pygame.image.load('images/pink/attack/right/attack3.png')
+PaladinAttackR1 = pygame.image.load('images/characters/paladin/attack/right/attack1.png')
+PaladinAttackR2 = pygame.image.load('images/characters/paladin/attack/right/attack2.png')
+PaladinAttackR3 = pygame.image.load('images/characters/paladin/attack/right/attack3.png')
 
-PinkAttackL1 = pygame.image.load('images/pink/attack/left/attack1.png')
-PinkAttackL2 = pygame.image.load('images/pink/attack/left/attack2.png')
-PinkAttackL3 = pygame.image.load('images/pink/attack/left/attack3.png')
+PaladinAttackL1 = pygame.image.load('images/characters/paladin/attack/left/attack1.png')
+PaladinAttackL2 = pygame.image.load('images/characters/paladin/attack/left/attack2.png')
+PaladinAttackL3 = pygame.image.load('images/characters/paladin/attack/left/attack3.png')
 
-PinkAttackU1 = pygame.image.load('images/pink/attack/up/attack1.png')
-PinkAttackU2 = pygame.image.load('images/pink/attack/up/attack2.png')
-PinkAttackU3 = pygame.image.load('images/pink/attack/up/attack3.png')
+PaladinAttackU1 = pygame.image.load('images/characters/paladin/attack/up/attack1.png')
+PaladinAttackU2 = pygame.image.load('images/characters/paladin/attack/up/attack2.png')
+PaladinAttackU3 = pygame.image.load('images/characters/paladin/attack/up/attack3.png')
 
-PinkAttackD1 = pygame.image.load('images/pink/attack/down/attack1.png')
-PinkAttackD2 = pygame.image.load('images/pink/attack/down/attack2.png')
-PinkAttackD3 = pygame.image.load('images/pink/attack/down/attack3.png')
+PaladinAttackD1 = pygame.image.load('images/characters/paladin/attack/down/attack1.png')
+PaladinAttackD2 = pygame.image.load('images/characters/paladin/attack/down/attack2.png')
+PaladinAttackD3 = pygame.image.load('images/characters/paladin/attack/down/attack3.png')
+
+#######################################################################################################
+#Assasin character images #############################################################################
+#######################################################################################################
+
+#standing images
+AssassinStandR = pygame.image.load('images/characters/assassin/walk/right/stand.png')
+AssassinStandL = pygame.image.load('images/characters/assassin/walk/left/stand.png')
+AssassinStandU = pygame.image.load('images/characters/assassin/walk/up/stand.png')
+
+
+#walk images
+AssassinR1 = pygame.image.load('images/characters/assassin/walk/right/right1.png')
+AssassinR2 = pygame.image.load('images/characters/assassin/walk/right/right2.png')
+AssassinR3 = pygame.image.load('images/characters/assassin/walk/right/right3.png')
+AssassinR4 = pygame.image.load('images/characters/assassin/walk/right/right4.png')
+
+AssassinL1 = pygame.image.load('images/characters/assassin/walk/left/left1.png')
+AssassinL2 = pygame.image.load('images/characters/assassin/walk/left/left2.png')
+AssassinL3 = pygame.image.load('images/characters/assassin/walk/left/left3.png')
+AssassinL4 = pygame.image.load('images/characters/assassin/walk/left/left4.png')
+
+AssassinU1 = pygame.image.load('images/characters/assassin/walk/up/up1.png')
+AssassinU2 = pygame.image.load('images/characters/assassin/walk/up/up2.png')
+AssassinU3 = pygame.image.load('images/characters/assassin/walk/up/up3.png')
+AssassinU4 = pygame.image.load('images/characters/assassin/walk/up/up4.png')
+        
+AssassinD1 = pygame.image.load('images/characters/assassin/walk/down/down1.png')
+AssassinD2 = pygame.image.load('images/characters/assassin/walk/down/down2.png')
+AssassinD3 = pygame.image.load('images/characters/assassin/walk/down/down3.png')
+AssassinD4 = pygame.image.load('images/characters/assassin/walk/down/down4.png')
+
+#attack images
+'''
+AssassinAttackR1 = pygame.image.load('images/assassin/attack/right/attack1.png')
+AssassinAttackR2 = pygame.image.load('images/assassin/attack/right/attack2.png')
+AssassinAttackR3 = pygame.image.load('images/assassin/attack/right/attack3.png')
+
+AssassinAttackL1 = pygame.image.load('images/assassin/attack/left/attack1.png')
+AssassinAttackL2 = pygame.image.load('images/assassin/attack/left/attack2.png')
+AssassinAttackL3 = pygame.image.load('images/assassin/attack/left/attack3.png')
+
+AssassinAttackU1 = pygame.image.load('images/assassin/attack/up/attack1.png')
+AssassinAttackU2 = pygame.image.load('images/assassin/attack/up/attack2.png')
+AssassinAttackU3 = pygame.image.load('images/assassin/attack/up/attack3.png')
+
+AssassinAttackD1 = pygame.image.load('images/assassin/attack/down/attack1.png')
+AssassinAttackD2 = pygame.image.load('images/assassin/attack/down/attack2.png')
+AssassinAttackD3 = pygame.image.load('images/assassin/attack/down/attack3.png')
+'''
 
 #######################################################################################################
 #Map Images ###########################################################################################
@@ -81,10 +131,10 @@ ThrownRopeDown = pygame.image.load('images/items/rope/throwndown1.png')
 #######################################################################################################
 #HUD Images ###########################################################################################
 #######################################################################################################
-InvImg = pygame.image.load('images/inventory.png')
-UiImg = pygame.image.load('images/hud.png')
-HealthBar = pygame.image.load('images/healthbar.png')
-SpecialBar = pygame.image.load('images/specialbar.png')
+InvImg = pygame.image.load('images/interface/inventory.png')
+UiImg = pygame.image.load('images/interface/hud.png')
+HealthBar = pygame.image.load('images/interface/healthbar.png')
+SpecialBar = pygame.image.load('images/interface/specialbar.png')
 
 #######################################################################################################
 #Enemy Images #########################################################################################
@@ -147,3 +197,7 @@ PlayButtonHover = pygame.image.load('images/menu/buttons/playhover.png')
 
 #portraits
 PaladinPortrait = pygame.image.load('images/menu/portraits/paladin.png')
+AssassinPortrait = pygame.image.load('images/menu/portraits/assassin.png')
+WizardPortrait = pygame.image.load('images/menu/portraits/mage.png')
+AlienPortrait = pygame.image.load('images/menu/portraits/alien.png')
+PortraitSelector = pygame.image.load('images/menu/portraits/selector.png')

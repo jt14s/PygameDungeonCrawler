@@ -447,17 +447,17 @@ class Hero(pygame.sprite.Sprite):
 
 class Paladin(Hero):
     def __init__(self, x, y, DIRECTION, screen):
-        self.walk_right_animation = [PinkR1, PinkR2, PinkR1, PinkR3]
-        self.attack_right_animation = [PinkAttackR1, PinkAttackR2, PinkAttackR3]
+        self.walk_right_animation = [PaladinR1, PaladinR2, PaladinR1, PaladinR3]
+        self.attack_right_animation = [PaladinAttackR1, PaladinAttackR2, PaladinAttackR3]
 
-        self.walk_left_animation = [PinkL1, PinkL2, PinkL1, PinkL3]
-        self.attack_left_animation = [PinkAttackL1, PinkAttackL2, PinkAttackL3]
+        self.walk_left_animation = [PaladinL1, PaladinL2, PaladinL1, PaladinL3]
+        self.attack_left_animation = [PaladinAttackL1, PaladinAttackL2, PaladinAttackL3]
 
-        self.walk_down_animation = [PinkD1, PinkD2, PinkD1, PinkD3]
-        self.attack_down_animation = [PinkAttackD1, PinkAttackD2, PinkAttackD3]
+        self.walk_down_animation = [PaladinD1, PaladinD2, PaladinD1, PaladinD3]
+        self.attack_down_animation = [PaladinAttackD1, PaladinAttackD2, PaladinAttackD3]
 
-        self.walk_up_animation = [PinkU1, PinkU2, PinkU1, PinkU3]
-        self.attack_up_animation = [PinkAttackU1, PinkAttackU2, PinkAttackU3]
+        self.walk_up_animation = [PaladinU1, PaladinU2, PaladinU1, PaladinU3]
+        self.attack_up_animation = [PaladinAttackU1, PaladinAttackU2, PaladinAttackU3]
 
         #instance of a sword hit box that will be used to attack
         self.sword = None
@@ -480,14 +480,14 @@ class Wizard(Hero):
 class Alien(Hero):
     pass
 
-class Fighter(Hero):
+class Assassin(Hero):
     pass
 
 class SwordHitBox(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = PinkR1
+        self.image = PaladinR1
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
