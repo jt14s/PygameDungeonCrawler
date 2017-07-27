@@ -71,23 +71,24 @@ AssassinD3 = pygame.image.load('images/characters/assassin/walk/down/down3.png')
 AssassinD4 = pygame.image.load('images/characters/assassin/walk/down/down4.png')
 
 #attack images
-'''
-AssassinAttackR1 = pygame.image.load('images/assassin/attack/right/attack1.png')
-AssassinAttackR2 = pygame.image.load('images/assassin/attack/right/attack2.png')
-AssassinAttackR3 = pygame.image.load('images/assassin/attack/right/attack3.png')
+AssassinAttackR1 = pygame.image.load('images/characters/assassin/attack/right/attack1.png')
+AssassinAttackR2 = pygame.image.load('images/characters/assassin/attack/right/attack2.png')
+AssassinAttackR3 = pygame.image.load('images/characters/assassin/attack/right/attack3.png')
 
-AssassinAttackL1 = pygame.image.load('images/assassin/attack/left/attack1.png')
-AssassinAttackL2 = pygame.image.load('images/assassin/attack/left/attack2.png')
-AssassinAttackL3 = pygame.image.load('images/assassin/attack/left/attack3.png')
+AssassinAttackL1 = pygame.image.load('images/characters/assassin/attack/left/attack1.png')
+AssassinAttackL2 = pygame.image.load('images/characters/assassin/attack/left/attack2.png')
+AssassinAttackL3 = pygame.image.load('images/characters/assassin/attack/left/attack3.png')
 
-AssassinAttackU1 = pygame.image.load('images/assassin/attack/up/attack1.png')
-AssassinAttackU2 = pygame.image.load('images/assassin/attack/up/attack2.png')
-AssassinAttackU3 = pygame.image.load('images/assassin/attack/up/attack3.png')
+AssassinAttackU1 = pygame.image.load('images/characters/assassin/attack/up/attack1.png')
+AssassinAttackU2 = pygame.image.load('images/characters/assassin/attack/up/attack2.png')
+AssassinAttackU3 = pygame.image.load('images/characters/assassin/attack/up/attack3.png')
 
-AssassinAttackD1 = pygame.image.load('images/assassin/attack/down/attack1.png')
-AssassinAttackD2 = pygame.image.load('images/assassin/attack/down/attack2.png')
-AssassinAttackD3 = pygame.image.load('images/assassin/attack/down/attack3.png')
-'''
+AssassinAttackD1 = pygame.image.load('images/characters/assassin/attack/down/attack1.png')
+AssassinAttackD2 = pygame.image.load('images/characters/assassin/attack/down/attack2.png')
+AssassinAttackD3 = pygame.image.load('images/characters/assassin/attack/down/attack3.png')
+
+AssassinHitBoxH = pygame.image.load('images/characters/assassin/attack/assassin_hit_box_h.png')
+AssassinHitBoxV = pygame.image.load('images/characters/assassin/attack/assassin_hit_box_v.png')
 
 #######################################################################################################
 #Map Images ###########################################################################################

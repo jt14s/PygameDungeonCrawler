@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 from image_loader import *
 from items import *
 from hud import *
@@ -96,7 +96,14 @@ class Hero(pygame.sprite.Sprite):
                     break
 
         # THIS SHOULD BE MOVED TO A TAKE_DAMAGE FUNCTION ONCE THE MOB GETS AN ATTACK ANIMATION!!!!
-        mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
+        if self.attack_timer >= 0 and self.DIRECTION == self.LEFT:
+            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False, collided=pygame.sprite.collide_rect_ratio(self.attack_left_ratio))
+
+        elif self.attack_timer >= 0 and self.DIRECTION == self.UP:
+            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False, collided=pygame.sprite.collide_rect_ratio(self.attack_up_ratio))
+
+        else:
+            mob_hit_list = pygame.sprite.groupcollide(self.mobs, player, False, False)
         
         for mob in mob_hit_list:
             if self.invuln_frames == 0:
@@ -284,101 +291,9 @@ class Hero(pygame.sprite.Sprite):
     def initiate_attack(self):
         self.can_move = False
         self.can_attack = False
-        self.attack_timer = 15
+        self.attack_timer = self.attack_length
 
-    def attack(self):
-
-        # perform attack animation
-        if self.attack_timer > 0:
-
-            # every 5 frames change the animation
-            if self.attack_timer % 5 == 0:
-
-                if self.DIRECTION == self.RIGHT:
-
-                    # change animation to next frame
-                    self.image = self.attack_right_animation[
-                        len(self.attack_right_animation) - ((self.attack_timer) / 5)]
-
-                    # damage enemies that are in range, if on attack frame
-                    if len(self.attack_right_animation) - ((self.attack_timer) / 5) == 2:
-                        self.sword = SwordHitBox(self.rect.x + 30, self.rect.y)
-
-                        sword = pygame.sprite.GroupSingle(self.sword)
-                        mob_hit_list = pygame.sprite.groupcollide(self.mobs, sword, False, False)
-
-                        for mob in mob_hit_list:
-                            mob.take_damage(self.sword.damage, self)
-
-                if self.DIRECTION == self.LEFT:
-
-                    # change animation to next frame
-                    self.image = self.attack_left_animation[len(self.attack_left_animation) - ((self.attack_timer) / 5)]
-
-                    # damage enemies that are in range, if on attack frame
-                    if len(self.attack_left_animation) - ((self.attack_timer) / 5) == 2:
-                        self.rect.x -= 19
-
-                        self.sword = SwordHitBox(self.rect.x - 30, self.rect.y)
-
-                        sword = pygame.sprite.GroupSingle(self.sword)
-                        mob_hit_list = pygame.sprite.groupcollide(self.mobs, sword, False, False)
-
-                        for mob in mob_hit_list:
-                            mob.take_damage(self.sword.damage, self)
-
-                if self.DIRECTION == self.UP:
-
-                    # change animation to next frame
-                    self.image = self.attack_up_animation[len(self.attack_up_animation) - ((self.attack_timer) / 5)]
-
-                    # damage enemies that are in range, if on attack frame
-                    if len(self.attack_up_animation) - ((self.attack_timer) / 5) == 2:
-                        self.rect.y -= 19
-
-                        self.sword = SwordHitBox(self.rect.x, self.rect.y - 30)
-
-                        sword = pygame.sprite.GroupSingle(self.sword)
-                        mob_hit_list = pygame.sprite.groupcollide(self.mobs, sword, False, False)
-
-                        for mob in mob_hit_list:
-                            mob.take_damage(self.sword.damage, self)
-
-                if self.DIRECTION == self.DOWN:
-
-                    # change animation to next frame
-                    self.image = self.attack_down_animation[len(self.attack_down_animation) - ((self.attack_timer) / 5)]
-
-                    # damage enemies that are in range, if on attack frame
-                    if len(self.attack_down_animation) - ((self.attack_timer) / 5) == 2:
-                        self.sword = SwordHitBox(self.rect.x, self.rect.y + 30)
-
-                        sword = pygame.sprite.GroupSingle(self.sword)
-                        mob_hit_list = pygame.sprite.groupcollide(self.mobs, sword, False, False)
-
-                        for mob in mob_hit_list:
-                            mob.take_damage(self.sword.damage, self)
-
-            self.attack_timer -= 1
-        # attack finished; put back to standing position
-        elif self.attack_timer == 0:
-            if self.DIRECTION == self.RIGHT:
-                self.image = self.walk_right_animation[0]
-            if self.DIRECTION == self.LEFT:
-                self.image = self.walk_left_animation[0]
-                self.rect.x += 19
-            if self.DIRECTION == self.UP:
-                self.image = self.walk_up_animation[0]
-                self.rect.y += 19
-            if self.DIRECTION == self.DOWN:
-                self.image = self.walk_down_animation[0]
-
-            self.read_buffer()
-
-            self.can_move = True
-            self.can_attack = True
-            self.attack_timer = -1
-            self.sword = None
+    
 
     def remove_mob_with_id(self, id):
         i = 0
@@ -459,10 +374,14 @@ class Paladin(Hero):
         self.walk_up_animation = [PaladinU1, PaladinU2, PaladinU1, PaladinU3]
         self.attack_up_animation = [PaladinAttackU1, PaladinAttackU2, PaladinAttackU3]
 
-        #instance of a sword hit box that will be used to attack
-        self.sword = None
+        #instance of a attack_hit_box hit box that will be used to attack
+        self.attack_hit_box = None
         self.specialCost = 10
         self.walk_rate = 10
+        self.attack_length = 15
+        self.attack_left_ratio = 0.7
+        self.attack_up_ratio = 0.7
+        self.damage = 34
 
         if DIRECTION == "UP":
             Hero.__init__(self, self.walk_up_animation[0], x, y, DIRECTION, screen)
@@ -472,7 +391,99 @@ class Paladin(Hero):
             Hero.__init__(self, self.walk_left_animation[0], x, y, DIRECTION, screen)
         elif DIRECTION == "RIGHT":
             Hero.__init__(self, self.walk_right_animation[0], x, y, DIRECTION, screen)
-        
+
+    def attack(self):
+        # perform attack animation
+        if self.attack_timer > 0:
+
+            # every 5 frames change the animation
+            if self.attack_timer % 5 == 0:
+
+                if self.DIRECTION == self.RIGHT:
+
+                    # change animation to next frame
+                    self.image = self.attack_right_animation[
+                        len(self.attack_right_animation) - ((self.attack_timer) / 5)]
+
+                    # damage enemies that are in range, if on attack frame
+                    if len(self.attack_right_animation) - ((self.attack_timer) / 5) == 2:
+                        self.attack_hit_box = AttackHitBox(PaladinR1, self.rect.x + 30, self.rect.y, self.damage)
+
+                        attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                        mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                        for mob in mob_hit_list:
+                            mob.take_damage(self.attack_hit_box.damage, self)
+
+                if self.DIRECTION == self.LEFT:
+
+                    # change animation to next frame
+                    self.image = self.attack_left_animation[len(self.attack_left_animation) - ((self.attack_timer) / 5)]
+
+                    # damage enemies that are in range, if on attack frame
+                    if len(self.attack_left_animation) - ((self.attack_timer) / 5) == 2:
+                        self.rect.x -= 19
+
+                        self.attack_hit_box = AttackHitBox(PaladinR1, self.rect.x - 30, self.rect.y, self.damage)
+
+                        attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                        mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                        for mob in mob_hit_list:
+                            mob.take_damage(self.attack_hit_box.damage, self)
+
+                if self.DIRECTION == self.UP:
+
+                    # change animation to next frame
+                    self.image = self.attack_up_animation[len(self.attack_up_animation) - ((self.attack_timer) / 5)]
+
+                    # damage enemies that are in range, if on attack frame
+                    if len(self.attack_up_animation) - ((self.attack_timer) / 5) == 2:
+                        self.rect.y -= 19
+
+                        self.attack_hit_box = AttackHitBox(PaladinR1, self.rect.x, self.rect.y - 30, self.damage)
+
+                        attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                        mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                        for mob in mob_hit_list:
+                            mob.take_damage(self.attack_hit_box.damage, self)
+
+                if self.DIRECTION == self.DOWN:
+
+                    # change animation to next frame
+                    self.image = self.attack_down_animation[len(self.attack_down_animation) - ((self.attack_timer) / 5)]
+
+                    # damage enemies that are in range, if on attack frame
+                    if len(self.attack_down_animation) - ((self.attack_timer) / 5) == 2:
+                        self.attack_hit_box = AttackHitBox(PaladinR1, self.rect.x, self.rect.y + 30, self.damage)
+
+                        attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                        mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                        for mob in mob_hit_list:
+                            mob.take_damage(self.attack_hit_box.damage, self)
+
+            self.attack_timer -= 1
+        # attack finished; put back to standing position
+        elif self.attack_timer == 0:
+            if self.DIRECTION == self.RIGHT:
+                self.image = self.walk_right_animation[0]
+            if self.DIRECTION == self.LEFT:
+                self.image = self.walk_left_animation[0]
+                self.rect.x += 19
+            if self.DIRECTION == self.UP:
+                self.image = self.walk_up_animation[0]
+                self.rect.y += 19
+            if self.DIRECTION == self.DOWN:
+                self.image = self.walk_down_animation[0]
+
+            self.read_buffer()
+
+            self.can_move = True
+            self.can_attack = True
+            self.attack_timer = -1
+            self.attack_hit_box = None
 
 class Wizard(Hero):
     pass
@@ -481,14 +492,157 @@ class Alien(Hero):
     pass
 
 class Assassin(Hero):
-    pass
+    def __init__(self, x, y, DIRECTION, screen):
+        self.walk_right_animation = [AssassinR1, AssassinR2, AssassinR3, AssassinR4]
+        self.attack_right_animation = [AssassinAttackR1, AssassinAttackR2, AssassinAttackR3]
 
-class SwordHitBox(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+        self.walk_left_animation = [AssassinL1, AssassinL2, AssassinL3, AssassinL4]
+        self.attack_left_animation = [AssassinAttackL1, AssassinAttackL2, AssassinAttackL3]
+
+        self.walk_down_animation = [AssassinD1, AssassinD2, AssassinD3, AssassinD4]
+        self.attack_down_animation = [AssassinAttackD1, AssassinAttackD2, AssassinAttackD3]
+
+        self.walk_up_animation = [AssassinU1, AssassinU2, AssassinU3, AssassinU4]
+        self.attack_up_animation = [AssassinAttackU1, AssassinAttackU2, AssassinAttackU3]
+
+        #instance of a attack_hit_box hit box that will be used to attack
+        self.attack_hit_box = None
+        self.specialCost = 10
+        self.walk_rate = 10
+
+        self.attack_length = 9
+        self.attack_left_ratio = 0.02
+        self.attack_up_ratio = 0.1
+        self.attack_frame = -1
+        self.damage = 9
+
+        if DIRECTION == "UP":
+            Hero.__init__(self, self.walk_up_animation[0], x, y, DIRECTION, screen)
+        elif DIRECTION == "DOWN":
+            Hero.__init__(self, self.walk_down_animation[0], x, y, DIRECTION, screen)
+        elif DIRECTION == "LEFT":
+            Hero.__init__(self, self.walk_left_animation[0], x, y, DIRECTION, screen)
+        elif DIRECTION == "RIGHT":
+            Hero.__init__(self, self.walk_right_animation[0], x, y, DIRECTION, screen)
+
+    def attack(self):
+        # perform attack animation
+        if self.attack_timer > 0:
+            # every 5 frames change the animation
+            if self.attack_timer % 3 == 0:
+                self.attack_frame = len(self.attack_right_animation) - ((self.attack_timer) / 3)
+
+                if self.DIRECTION == self.RIGHT:
+                    # change animation to next frame
+                    self.image = self.attack_right_animation[self.attack_frame]
+
+                    # damage enemies that are in range, if on attack frame
+                    if self.attack_frame == 0:
+                        self.attack_hit_box = AttackHitBox(AssassinHitBoxH, self.rect.x, self.rect.y, self.damage)
+                    else:
+                        self.attack_hit_box = AttackHitBox(AssassinHitBoxH, self.rect.x + 35, self.rect.y, self.damage)
+
+
+                    attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                    mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                    for mob in mob_hit_list:
+                        mob.take_damage(self.attack_hit_box.damage, self)
+                        print self.attack_frame
+
+                    self.attack_hit_box = None
+
+                if self.DIRECTION == self.LEFT:
+
+                    # change animation to next frame
+                    self.image = self.attack_left_animation[self.attack_frame]
+
+                    # damage enemies that are in range, if on attack frame
+                    if self.attack_frame == 0:
+                        self.rect.x -= 30
+                    elif self.attack_frame == 1:
+                        self.rect.x -= 48
+
+                    self.attack_hit_box = AttackHitBox(AssassinHitBoxH, self.rect.x + 10, self.rect.y, self.damage)
+
+                    attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                    mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                    for mob in mob_hit_list:
+                        mob.take_damage(self.attack_hit_box.damage, self)
+
+                    self.attack_hit_box = None
+
+                if self.DIRECTION == self.UP:
+
+                    # change animation to next frame
+                    self.image = self.attack_up_animation[self.attack_frame]
+
+                    # damage enemies that are in range, if on attack frame
+                    if self.attack_frame == 0:
+                        self.rect.y -= 33
+                    if self.attack_frame == 1:
+                        self.rect.y -= 48
+
+                    self.attack_hit_box = AttackHitBox(AssassinHitBoxV, self.rect.x, self.rect.y, self.damage)
+
+                    attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                    mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                    for mob in mob_hit_list:
+                        mob.take_damage(self.attack_hit_box.damage, self)
+
+                    self.attack_hit_box = None
+
+
+                if self.DIRECTION == self.DOWN:
+
+                    # change animation to next frame
+                    self.image = self.attack_down_animation[self.attack_frame]
+
+                    # damage enemies that are in range, if on attack frame
+                    if self.attack_frame == 0:
+                        self.attack_hit_box = AttackHitBox(AssassinHitBoxV, self.rect.x, self.rect.y, self.damage)
+                    else:
+                         self.attack_hit_box = AttackHitBox(AssassinHitBoxV, self.rect.x, self.rect.y + 40, self.damage)                       
+
+                    attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                    mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                    for mob in mob_hit_list:
+                        mob.take_damage(self.attack_hit_box.damage, self)
+                        print self.attack_frame
+
+                    self.attack_hit_box = None
+
+            self.attack_timer -= 1
+        # attack finished; put back to standing position
+        elif self.attack_timer == 0:
+            if self.DIRECTION == self.RIGHT:
+                self.image = self.walk_right_animation[0]
+            if self.DIRECTION == self.LEFT:
+                self.image = self.walk_left_animation[0]
+                self.rect.x += 78
+            if self.DIRECTION == self.UP:
+                self.image = self.walk_up_animation[0]
+                self.rect.y += 81
+            if self.DIRECTION == self.DOWN:
+                self.image = self.walk_down_animation[0]
+
+            self.read_buffer()
+
+            self.can_move = True
+            self.can_attack = True
+            self.attack_timer = -1
+            self.attack_frame = -1
+
+
+class AttackHitBox(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, damage):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = PaladinR1
+        self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.damage = 34
+        self.damage = damage

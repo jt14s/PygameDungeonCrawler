@@ -105,6 +105,7 @@ class GameMain():
         self.all_sprite_list.draw(self.screen)
 
 
+        
         for mob in self.current_room.mob_list:
             if mob.look_for_hero(self.hero) == True:
                 mob.follow_hero(self.hero)
