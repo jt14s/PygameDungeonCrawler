@@ -112,10 +112,127 @@ class Hero(pygame.sprite.Sprite):
                 
                 if self.hp <= 0:
                     print 'hero ded'
+                else:
+                    if mob.DIRECTION == "left":
+                        for x in range(0, mob.knockback):
+                            self.rect.x -= 1
+
+                            interaction = False
+
+                            roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False,
+                                                                       collided=pygame.sprite.collide_rect_ratio(0.52))
+                            wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False,
+
+                                                                       collided=pygame.sprite.collide_rect_ratio(0.52))
+
+                            portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False,
+                                                                         collided=pygame.sprite.collide_rect_ratio(1))
+
+                            for wall in wall_hit_list:
+                                self.rect.left = wall.rect.right - 63
+                                interaction = True
+
+                            for roof in roof_hit_list:
+                                self.rect.left = roof.rect.right - 63
+                                interaction = True
+
+                            for portal in portal_hit_list:
+                                self.rect.y = portal.rect.y
+                                self.rect.x = self.screen.get_width() - 68
+                                self.current_x = portal.room_x
+                                interaction = True
+
+                            if interaction == True:
+                                break
+                
+                    elif mob.DIRECTION == "right":
+                        for x in range(0, mob.knockback):
+                            self.rect.x += 1
+
+                            interaction = False
+
+                            roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False,
+                                                                   collided=pygame.sprite.collide_rect_ratio(0.52))
+                            wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False,
+
+                                                                   collided=pygame.sprite.collide_rect_ratio(0.52))
+
+                            portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False,
+                                                                     collided=pygame.sprite.collide_rect_ratio(1))
+
+
+
+                            for wall in wall_hit_list:
+                                self.rect.right = wall.rect.left + 63
+                                interaction = True
+
+                            for roof in roof_hit_list:
+                                self.rect.right = roof.rect.left + 63
+                                interaction = True
+
+                            for portal in portal_hit_list:
+                                self.rect.y = portal.rect.y
+                                self.rect.x = 0
+                                self.current_x = portal.room_x
+                                interaction = True
+
+                            if interaction == True:
+                                break
+
+                    elif mob.DIRECTION == "up":
+                        for y in range(0, mob.knockback):
+                            self.rect.y -= 1
+
+                            interaction = False
+
+                            wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False,
+                                                                   collided=pygame.sprite.collide_rect_ratio(0.52))
+
+                            portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False,
+                                                                     collided=pygame.sprite.collide_rect_ratio(1))
+
+                        
+                            for wall in wall_hit_list:
+                                self.rect.top = wall.rect.bottom - 63
+                                interaction = True
+
+                            for portal in portal_hit_list:
+                                self.rect.y = self.screen.get_height() - 68
+                                self.rect.x = portal.rect.x
+                                self.current_x = portal.room_x
+                                interaction = True
+
+                            if interaction == True:
+                                break
+                                
+                    elif mob.DIRECTION == "down":
+                        for y in range(0, mob.knockback):
+                            self.rect.y += 1
+
+                            interaction = False
+
+                            roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False,
+                                                                       collided=pygame.sprite.collide_rect_ratio(0.52))
+
+                            portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False,
+                                                                         collided=pygame.sprite.collide_rect_ratio(1))
+
+                            for roof in roof_hit_list:
+                                self.rect.bottom = roof.rect.top + 63
+                                interaction = True
+
+                            for portal in portal_hit_list:
+                                self.rect.y = 0
+                                self.rect.x = portal.rect.x
+                                self.current_x = portal.room_x
+                                interaction = True
+
+                            
+                            if interaction == True:
+                                break
+
 
                 self.invuln_frames = 20
-
-        # draw projectiles to screen
 
         # if attacking
         if self.attack_timer >= 0:
@@ -256,16 +373,46 @@ class Hero(pygame.sprite.Sprite):
                 self.ui.sp_bar.updateSpecial(self.specialCost, self.sp, self.MAX_SP)
                 self.sp -= self.specialCost
         elif self.oneKeyPressed and self.can_attack and self.inventory.slots[0][1] != 'empty':
-            if self.inventory.slots[0][0].item_name == 'rope':
+            '''if self.inventory.slots[0][0].item_name == 'rope':
                 thrown_rope = ThrownRope(self.rect.x + 30, self.rect.y + 30, self.DIRECTION,
                                          self.walls, self.roofs, self.mobs)
-                self.projectiles.add(thrown_rope)
+                self.projectiles.add(thrown_rope)'''
+            if self.inventory.slots[0][0].item_name == 'health':
+                if self.hp + 25 > self.MAX_HP:
+                    self.ui.hp_bar.updateHealth(-(self.MAX_HP - self.hp), self.hp, self.MAX_HP)
+                    self.hp = self.MAX_HP
+                else:
+                    self.ui.hp_bar.updateHealth(-25, self.hp, self.MAX_HP)
+                    self.hp += 25
+            elif self.inventory.slots[0][0].item_name == 'special':
+                if self.sp + 25 > self.MAX_SP:
+                    self.ui.sp_bar.updateSpecial(-(self.MAX_SP - self.sp), self.sp, self.MAX_SP)
+                    self.sp = self.MAX_SP
+                else:
+                    self.ui.sp_bar.updateSpecial(-25, self.sp, self.MAX_SP)
+                    self.sp += 25
+                        
 
         elif self.twoKeyPressed and self.can_attack and self.inventory.slots[1][1] != 'empty':
-            if self.inventory.slots[1][0].item_name == 'rope':
+            '''if self.inventory.slots[1][0].item_name == 'rope':
                 thrown_rope = ThrownRope(self.rect.x + 30, self.rect.y + 30, self.DIRECTION,
                                          self.walls, self.roofs, self.mobs)
-                self.projectiles.add(thrown_rope)
+                self.projectiles.add(thrown_rope)'''
+            if self.inventory.slots[1][0].item_name == 'health':
+                if self.hp + 25 > self.MAX_HP:
+                    self.ui.hp_bar.updateHealth(-(self.MAX_HP - self.hp), self.hp, self.MAX_HP)
+                    self.hp = self.MAX_HP
+                else:
+                    self.ui.hp_bar.updateHealth(-25, self.hp, self.MAX_HP)
+                    self.hp += 25
+            elif self.inventory.slots[1][0].item_name == 'special':
+                if self.sp + 25 > self.MAX_SP:
+                    self.ui.sp_bar.updateSpecial(-(self.MAX_SP - self.sp), self.sp, self.MAX_SP)
+                    self.sp = self.MAX_SP
+                else:
+                    self.ui.sp_bar.updateSpecial(-25, self.sp, self.MAX_SP)
+                    self.sp += 25
+
 
         if not self.rightKeyPressed and not self.leftKeyPressed and not self.upKeyPressed and not self.downKeyPressed and self.can_move:
             if self.DIRECTION == self.UP:
@@ -382,6 +529,7 @@ class Paladin(Hero):
         self.attack_left_ratio = 0.7
         self.attack_up_ratio = 0.7
         self.damage = 34
+        self.knockback = 80
 
         if DIRECTION == "UP":
             Hero.__init__(self, self.walk_up_animation[0], x, y, DIRECTION, screen)
@@ -515,6 +663,7 @@ class Assassin(Hero):
         self.attack_up_ratio = 0.1
         self.attack_frame = -1
         self.damage = 9
+        self.knockback = 6
 
         if DIRECTION == "UP":
             Hero.__init__(self, self.walk_up_animation[0], x, y, DIRECTION, screen)

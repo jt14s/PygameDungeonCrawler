@@ -72,8 +72,8 @@ class MainMenu(object):
         # background group
         self.background = Splash()
         self.logo = Sprite(GameLogo, self.width/6, 0)
-        self.menu_ui = pygame.sprite.Group()
-        self.menu_ui.add(self.background, self.logo)
+        self.background_group = pygame.sprite.GroupSingle(self.background)
+        self.logo_group = pygame.sprite.GroupSingle(self.logo)
 
         # buttons group
         self.single_mode_button = Button(SingleplayerButton, self.width/2.8, self.height/2)
@@ -120,7 +120,7 @@ class MainMenu(object):
                     for button in button_click_list:
                         if self.single_mode_button == button:
                             self.menu_buttons.remove(self.single_mode_button, self.multi_mode_button)
-                            self.menu_ui.remove(self.logo)
+                            self.logo.kill()
                             self.menu_buttons.add(self.start_game_button)
 
                             self.selector_group.add(self.selector)
@@ -147,9 +147,10 @@ class MainMenu(object):
                     game.main_loop()
                     
     def draw(self):
-        self.menu_ui.draw(self.screen)
+        self.background_group.draw(self.screen)
+        self.logo_group.draw(self.screen)
         self.menu_buttons.draw(self.screen)
-        self.menu_ui.update()
+        self.background_group.update()
         self.selector_group.draw(self.screen)
         
         pygame.display.flip()
@@ -157,7 +158,8 @@ class MainMenu(object):
     def clean(self):
         del self.background
         del self.logo
-        del self.menu_ui
+        del self.logo_group
+        del self.background_group
         del self.single_mode_button
         del self.multi_mode_button
         del self.start_game_button

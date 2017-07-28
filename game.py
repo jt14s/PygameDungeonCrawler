@@ -63,7 +63,7 @@ class GameMain():
     def main_loop(self):
         while not self.done:
             if self.current_x != self.hero.current_x:
-                self.current_x = self.hero.current_x        
+                self.current_x = self.hero.current_x
 
                 for mob in self.current_room.mob_list:
                     mob.rect.x = mob.ORIG_X
@@ -77,10 +77,16 @@ class GameMain():
                 self.hero.items = self.current_room.item_list
                 self.hero.walls = self.current_room.wall_list
                 self.hero.roofs = self.current_room.roof_list
-                self.hero.mobs = self.current_room.mob_list                        
-
                 self.hero.portals = self.current_room.portal_list
+        
+                self.hero.mobs = self.current_room.mob_list
+                self.hero.mobs.roofs = self.hero.roofs
+                self.hero.mobs.walls = self.hero.walls
 
+                for mob in self.current_room.mob_list:
+                    mob.roofs = self.hero.mobs.roofs
+                    mob.walls = self.hero.mobs.walls
+                
                 # load sprite groups accordingly
                 self.all_room_tiles.empty()
                 self.all_sprite_list.empty()
@@ -92,7 +98,7 @@ class GameMain():
             self.handle_events()
             self.all_sprite_list.update()
             self.draw()
-            self.clock.tick(60)
+            self.clock.tick(256)
 
         pygame.quit()
 
@@ -104,12 +110,9 @@ class GameMain():
         self.current_room.item_list.draw(self.screen)
         self.all_sprite_list.draw(self.screen)
 
-
-        
         for mob in self.current_room.mob_list:
             if mob.look_for_hero(self.hero) == True:
                 mob.follow_hero(self.hero)
-
 
         self.hero.projectiles.draw(self.screen)
         self.hero.projectiles.update()
