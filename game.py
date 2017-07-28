@@ -22,6 +22,8 @@ class GameMain():
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.clock = pygame.time.Clock()
 
+        self.pause = False
+
         # create hero and necessary sprite groups
         if character == 'PL':
             self.hero = Paladin(68, 136, "DOWN", self.screen)
@@ -156,9 +158,9 @@ class GameMain():
             if event.type == pygame.QUIT:
                 self.done = True
             elif event.type == KEYDOWN:
-
                 if event.key == K_ESCAPE:
-                    self.done = True
+                    self.pause = True
+                    self.pause_game()
                     
                 elif self.hero.can_move == True:
                     # directionals
@@ -174,8 +176,6 @@ class GameMain():
                     if event.key == K_RIGHT:
                         self.hero.rightKeyPressed = True
                         self.hero.leftKeyPressed = False
-
-                    # fix the attack animation
 
                 else:
                     self.hero.buffer = event.key
@@ -230,6 +230,53 @@ class GameMain():
                 if self.hero.can_attack == False or self.hero.can_move == False:
                     self.hero.buffer = event.key
                     self.hero.buffer_type = event.type
+
+    def pause_game(self):
+        self.hero.upKeyPressed = False
+        self.hero.downKeyPressed = False
+        self.hero.leftKeyPressed = False
+        self.hero.rightKeyPressed = False
+
+        quit_button = Button(SingleplayerButton, self.screen.get_width()/2.8, self.screen.get_height()/2.5)
+        resume_button = Button(PlayButton, self.screen.get_width()/2.8, self.screen.get_height()/2.5 + 70)
+
+        button_group = pygame.sprite.Group()
+        button_group.add(quit_button, resume_button)
+
+        pause_font1 = pygame.font.SysFont(None, 60)
+        pause_font2 = pygame.font.SysFont(None, 25)
+        pause_text = pause_font1.render('- PAUSED -', 0, (255,255,255))
+        #pause_text_sub = pause_font2.render('PRESS START BUTTON', 0, (255,255,255))
+
+        while self.pause:    
+            
+            self.screen.blit(pause_text, (self.screen.get_width()/2.8 + 70, self.screen.get_height()/2.5 - 70))
+            #self.screen.blit(pause_text_sub, (self.screen.get_width()/2.8 + 75, self.screen.get_height()/2.5 - 10))
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        self.pause = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        cursor = CursorLocation(event.pos)
+                        click = pygame.sprite.GroupSingle(cursor)
+                        button_click_list = pygame.sprite.groupcollide(button_group, click, False, False)
+                        cursor.kill()
+
+                        for button in button_click_list:
+                            if button == quit_button:
+                                pygame.quit()
+                                quit()
+                            elif button == resume_button:
+                                self.pause = False
+
+            button_group.draw(self.screen)
+            pygame.display.update()
+            self.clock.tick(15)
 
 
 if __name__ == "__main__":
