@@ -6,12 +6,14 @@ import pygame, random, math
 from pygame.locals import *
 from characters import *
 from rooms import *
+from game_over import *
+
 
 
 class GameMain():
     done = False
 
-    def __init__(self, character = 'PL', width=1224, height=952):
+    def __init__(self, character = 'PL', width=1224, height=700):
         pygame.init()
 
         # set screen variables
@@ -98,13 +100,15 @@ class GameMain():
             self.handle_events()
             self.all_sprite_list.update()
             self.draw()
-            self.clock.tick(256)
+            self.clock.tick(64)
 
         pygame.quit()
 
+    def clean(self):
+        del self.hero
+        del self.rooms
+
     def draw(self):
-        if self.hero.hp <= 0:
-            self.all_sprite_list.remove(self.hero)
 
         self.all_room_tiles.draw(self.screen)
         self.current_room.item_list.draw(self.screen)
@@ -136,6 +140,13 @@ class GameMain():
         self.inv.draw(self.screen)
         self.hero.item_slot_group.draw(self.screen)
 
+        if self.hero.hp <= 0:
+            self.all_sprite_list.remove(self.hero)
+            self.clean()
+            game_over = GameOver()
+            game_over.game_over_loop()
+
+
         pygame.display.flip()
 
     def handle_events(self):
@@ -148,9 +159,6 @@ class GameMain():
 
                 if event.key == K_ESCAPE:
                     self.done = True
-                elif event.key == K_r:
-                    obj = GameMain()
-                    obj.main_loop()
                     
                 elif self.hero.can_move == True:
                     # directionals
@@ -222,6 +230,7 @@ class GameMain():
                 if self.hero.can_attack == False or self.hero.can_move == False:
                     self.hero.buffer = event.key
                     self.hero.buffer_type = event.type
+
 
 if __name__ == "__main__":
     game = GameMain()

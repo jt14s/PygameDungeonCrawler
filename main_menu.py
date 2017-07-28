@@ -141,7 +141,7 @@ class MainMenu(object):
                 self.button_down = False
 
                 if self.start_game:
-                    #delete things that wont be used again            
+                    #delete things that wont be used again
                     game = GameMain(self.character_choice)
                     self.clean()
                     game.main_loop()

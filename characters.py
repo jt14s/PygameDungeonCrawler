@@ -384,6 +384,7 @@ class Hero(pygame.sprite.Sprite):
                 else:
                     self.ui.hp_bar.updateHealth(-25, self.hp, self.MAX_HP)
                     self.hp += 25
+
             elif self.inventory.slots[0][0].item_name == 'special':
                 if self.sp + 25 > self.MAX_SP:
                     self.ui.sp_bar.updateSpecial(-(self.MAX_SP - self.sp), self.sp, self.MAX_SP)
@@ -391,6 +392,8 @@ class Hero(pygame.sprite.Sprite):
                 else:
                     self.ui.sp_bar.updateSpecial(-25, self.sp, self.MAX_SP)
                     self.sp += 25
+            self.inventory.slots[0][1] = "empty"
+            self.inventory.slots[0][0].kill()
                         
 
         elif self.twoKeyPressed and self.can_attack and self.inventory.slots[1][1] != 'empty':
@@ -412,6 +415,8 @@ class Hero(pygame.sprite.Sprite):
                 else:
                     self.ui.sp_bar.updateSpecial(-25, self.sp, self.MAX_SP)
                     self.sp += 25
+            self.inventory.slots[1][1] = "empty"
+            self.inventory.slots[1][0].kill()
 
 
         if not self.rightKeyPressed and not self.leftKeyPressed and not self.upKeyPressed and not self.downKeyPressed and self.can_move:
