@@ -276,8 +276,8 @@ class ShrimpMob(Mob):
 
                                 interaction_x = False
 
-                                roof_hit_list = pygame.sprite.groupcollide(shrimp, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(.75))
-                                wall_hit_list = pygame.sprite.groupcollide(shrimp, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(.75))
+                                roof_hit_list = pygame.sprite.groupcollide(shrimp, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(.52))
+                                wall_hit_list = pygame.sprite.groupcollide(shrimp, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(.52))
 
                                 for wall in wall_hit_list:
                                     if not interaction_x:
@@ -297,9 +297,9 @@ class ShrimpMob(Mob):
                                 interaction_x = False
 
                                 roof_hit_list = pygame.sprite.groupcollide(shrimp, self.roofs, False, False,
-                                                                           collided=pygame.sprite.collide_rect_ratio(.75))
+                                                                           collided=pygame.sprite.collide_rect_ratio(.52))
                                 wall_hit_list = pygame.sprite.groupcollide(shrimp, self.walls, False, False,
-                                                                           collided=pygame.sprite.collide_rect_ratio(.75))
+                                                                           collided=pygame.sprite.collide_rect_ratio(.52))
 
                                 for wall in wall_hit_list:
                                     if not interaction_x:

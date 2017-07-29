@@ -91,6 +91,53 @@ AssassinHitBoxH = pygame.image.load('images/characters/assassin/attack/assassin_
 AssassinHitBoxV = pygame.image.load('images/characters/assassin/attack/assassin_hit_box_v.png')
 
 #######################################################################################################
+#Mage character images ################################################################################
+#######################################################################################################
+
+#walk images
+MageR1 = pygame.image.load('images/characters/mage/walk/right/stand.png')
+MageR2 = pygame.image.load('images/characters/mage/walk/right/walk.png')
+
+MageL1 = pygame.image.load('images/characters/mage/walk/left/stand.png')
+MageL2 = pygame.image.load('images/characters/mage/walk/left/walk.png')
+
+MageU1 = pygame.image.load('images/characters/mage/walk/up/stand.png')
+MageU2 = pygame.image.load('images/characters/mage/walk/up/walk.png')
+
+MageD1 = pygame.image.load('images/characters/mage/walk/down/stand.png')
+MageD2 = pygame.image.load('images/characters/mage/walk/down/walk.png')
+
+#attack images
+MageAttackR1 = pygame.image.load('images/characters/mage/attack/right/attack1.png')
+MageAttackR2 = pygame.image.load('images/characters/mage/attack/right/attack2.png')
+MageAttackR3 = pygame.image.load('images/characters/mage/attack/right/attack3.png')
+
+MageAttackL1 = pygame.image.load('images/characters/mage/attack/left/attack1.png')
+MageAttackL2 = pygame.image.load('images/characters/mage/attack/left/attack2.png')
+MageAttackL3 = pygame.image.load('images/characters/mage/attack/left/attack3.png')
+
+MageAttackU1 = pygame.image.load('images/characters/mage/attack/up/attack1.png')
+MageAttackU2 = pygame.image.load('images/characters/mage/attack/up/attack2.png')
+MageAttackU3 = pygame.image.load('images/characters/mage/attack/up/attack3.png')
+
+MageAttackD1 = pygame.image.load('images/characters/mage/attack/down/attack1.png')
+MageAttackD2 = pygame.image.load('images/characters/mage/attack/down/attack2.png')
+MageAttackD3 = pygame.image.load('images/characters/mage/attack/down/attack3.png')
+
+#projectile images
+MageProjectileR1 = pygame.image.load('images/characters/mage/attack/right/projectile1.png')
+MageProjectileR2 = pygame.image.load('images/characters/mage/attack/right/projectile2.png')
+
+MageProjectileL1 = pygame.image.load('images/characters/mage/attack/left/projectile1.png')
+MageProjectileL2 = pygame.image.load('images/characters/mage/attack/left/projectile2.png')
+
+MageProjectileU1 = pygame.image.load('images/characters/mage/attack/up/projectile1.png')
+MageProjectileU2 = pygame.image.load('images/characters/mage/attack/up/projectile2.png')
+
+MageProjectileD1 = pygame.image.load('images/characters/mage/attack/down/projectile1.png')
+MageProjectileD2 = pygame.image.load('images/characters/mage/attack/down/projectile2.png')
+
+#######################################################################################################
 #Map Images ###########################################################################################
 #######################################################################################################
 

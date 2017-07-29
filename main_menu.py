@@ -85,7 +85,7 @@ class MainMenu(object):
 
         # char select group
         self.character_portraits = [Portrait(PaladinPortrait, 80, height/3.5, 'PL'), Portrait(AssassinPortrait, 80 + 270, height/3.5, 'AS'),
-                                    Portrait(WizardPortrait, 80 + 270 * 2, height/3.5, 'WZ'), Portrait(AlienPortrait, 80 + 270 * 3, height/3.5, 'AL')]
+                                    Portrait(WizardPortrait, 80 + 270 * 2, height/3.5, 'MG'), Portrait(AlienPortrait, 80 + 270 * 3, height/3.5, 'AL')]
         self.selector = Selector(PortraitSelector, 80, height/3.5)
         self.selector_group = pygame.sprite.Group()
 

@@ -27,8 +27,8 @@ class GameMain():
         # create hero and necessary sprite groups
         if character == 'PL':
             self.hero = Paladin(68, 136, "DOWN", self.screen)
-        elif character == 'WZ':
-            self.hero = Wizard(68, 136, "DOWN", self.screen)
+        elif character == 'MG':
+            self.hero = Mage(68, 136, "DOWN", self.screen)
         elif character == 'AL':
             self.hero = Alien(68, 136, "DOWN", self.screen)
         elif character == 'AS':
