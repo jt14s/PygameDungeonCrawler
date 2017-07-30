@@ -15,6 +15,9 @@ class GameMain():
 
     def __init__(self, character = 'PL', width=1224, height=700):
         pygame.init()
+        #initialize joystick input
+        pygame.joystick.init()
+        joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
 
         # set screen variables
         self.width, self.height = width, height
@@ -152,8 +155,10 @@ class GameMain():
         pygame.display.flip()
 
     def handle_events(self):
+
         events = pygame.event.get()
         keys = pygame.key.get_pressed()
+
         for event in events:
             if event.type == pygame.QUIT:
                 self.done = True
@@ -163,6 +168,7 @@ class GameMain():
                     self.pause_game()
                     
                 elif self.hero.can_move == True:
+
                     # directionals
                     if event.key == K_UP:
                         self.hero.upKeyPressed = True
@@ -200,7 +206,6 @@ class GameMain():
                     self.hero.buffer = event.key
                     self.hero.buffer_type = event.type
 
-
             elif event.type == KEYUP:
 
                 if event.key == K_UP:
@@ -231,6 +236,126 @@ class GameMain():
                     self.hero.buffer = event.key
                     self.hero.buffer_type = event.type
 
+            # joystick code added
+            joystick_count = pygame.joystick.get_count()
+            #print(joystick_count)
+            for i in range(joystick_count):
+                joystick = pygame.joystick.Joystick(i)
+                joystick.init()
+                buttons = joystick.get_numbuttons()
+
+                if event.type == pygame.JOYBUTTONDOWN:
+                    print("Joystick button pressed.")
+                    if self.hero.can_move == True:
+                        if event.button == 0:
+                            print ("Up pressed")
+                            self.hero.upKeyPressed = True
+                            self.hero.downKeyPressed = False
+                        if event.button == 1:
+                            print("Down pressed")
+                            self.hero.downKeyPressed = True
+                            self.hero.upKeyPressed = False
+                        if event.button == 2:
+                            print ("Left pressed")
+                            self.hero.leftKeyPressed = True
+                            self.hero.rightKeyPressed = False
+                        if event.button == 3:
+                            print ("Right pressed")
+                            self.hero.rightKeyPressed = True
+                            self.hero.leftKeyPressed = False
+                        if event.button == 4:
+                            print ("Pause pressed")
+                            self.pause = True
+                            self.pause_game()
+                    else:
+                        keyPressed = None
+                        if event.button == 0:
+                            keyPressed = K_UP
+                        if event.button == 1:
+                            keyPressed = K_DOWN
+                        if event.button == 2:
+                            keyPressed = K_LEFT
+                        if event.button == 3:
+                            keyPressed = K_RIGHT
+                        if keyPressed is not None:
+                            self.hero.buffer = keyPressed
+                            self.hero.buffer_type = KEYDOWN
+
+                    if self.hero.can_attack == True:
+                        # physical attack
+                        print(event.button)
+                        if event.button == 11:
+                            print ("A button pressed")
+                            self.hero.spacePressed = True
+                            self.hero.initiate_attack()
+                        # special attack
+                        elif event.button == 12:
+                            print ("B button pressed")
+                            self.hero.specialPressed = True
+                        # items
+                        elif event.button == 13 and self.hero.inventory.slots[0][1] != 'empty':
+                            self.hero.oneKeyPressed = True
+
+                        elif event.button == 14 and self.hero.inventory.slots[1][1] != 'empty':
+                            self.hero.twoKeyPressed = True
+                    else:
+                        keyPressed = None
+                        if event.button == 11:
+                            keyPressed = K_SPACE
+                        if event.button == 12:
+                            keyPressed = K_u
+                        if event.button == 13:
+                            keyPressed = K_1
+                        if event.button == 14:
+                            keyPressed = K_2
+                        if keyPressed is not None:
+                            self.hero.buffer = keyPressed
+                            self.hero.buffer_type = KEYDOWN
+
+                if event.type == pygame.JOYBUTTONUP:
+                    if event.button == 0:
+                        print("Joystick button released.")
+                        self.hero.upKeyPressed = False
+                    if event.button == 1:
+                        print("Joystick button released.")
+                        self.hero.downKeyPressed = False
+                    if event.button == 2:
+                        print("Joystick button released.")
+                        self.hero.leftKeyPressed = False
+                    if event.button == 3:
+                        print("Joystick button released.")
+                        self.hero.rightKeyPressed = False
+                    if event.button == 11:
+                        self.hero.spacePressed = False
+                    if event.button == 12:
+                        self.hero.specialPressed = False
+                    if event.button == 13:
+                        self.hero.oneKeyPressed = False
+                    if event.button == 14:
+                        self.hero.twoKeyPressed = False
+                    if self.hero.can_attack == False or self.hero.can_move == False:
+                        keyPressed = None
+                        if event.button == 0:
+                            keyPressed = K_UP
+                        if event.button == 1:
+                            keyPressed = K_DOWN
+                        if event.button == 2:
+                            keyPressed = K_LEFT
+                        if event.button == 3:
+                            keyPressed = K_RIGHT
+                        if event.button == 11:
+                            keyPressed = K_SPACE
+                        if event.button == 12:
+                            keyPressed = K_u
+                        if event.button == 13:
+                            keyPressed = K_1
+                        if event.button == 14:
+                            keyPressed = K_2
+                        if keyPressed is not None:
+                            self.hero.buffer = keyPressed
+                            self.hero.buffer_type = KEYUP
+            # end of joystick code added
+
     def pause_game(self):
         self.hero.upKeyPressed = False
         self.hero.downKeyPressed = False
@@ -252,8 +377,18 @@ class GameMain():
             
             self.screen.blit(pause_text, (self.screen.get_width()/2.8 + 70, self.screen.get_height()/2.5 - 70))
             #self.screen.blit(pause_text_sub, (self.screen.get_width()/2.8 + 75, self.screen.get_height()/2.5 - 10))
-            
+
             for event in pygame.event.get():
+                joystick_count = pygame.joystick.get_count()
+                # print(joystick_count)
+                for i in range(joystick_count):
+                    joystick = pygame.joystick.Joystick(i)
+                    joystick.init()
+                    buttons = joystick.get_numbuttons()
+                    if event.type == pygame.JOYBUTTONDOWN:
+                        if event.button == 4:
+                            self.pause = False
+
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()

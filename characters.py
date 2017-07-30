@@ -106,6 +106,7 @@ class Hero(Sprite):
             if self.invuln_frames == 0:
                 self.ui.hp_bar.updateHealth(mob.damage, self.hp, self.MAX_HP)
                 self.hp -= mob.damage
+                self.invuln_frames = 20
                 
                 # knock hero back
                 ''' For loop up to how many pixels hero should be knocked back. Stop knockback on collision '''
@@ -469,8 +470,8 @@ class Paladin(Hero):
         self.knockback = 80
 
         # hp vars
-        self.hp = 200
-        self.MAX_HP = 200
+        self.hp = 2000
+        self.MAX_HP = 2000
 
         # sp vars
         self.sp = 100

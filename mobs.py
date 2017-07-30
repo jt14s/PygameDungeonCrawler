@@ -26,6 +26,8 @@ class Mob(pygame.sprite.Sprite):
         self.direction_y = None
         self.DIRECTION = None
 
+        self.attack_ticker = 0
+
     def follow_hero(self, Hero):
         # find direction vector from hero to enemy
         self.direction_x = Hero.rect.x - self.rect.x
@@ -56,10 +58,10 @@ class Mob(pygame.sprite.Sprite):
         self.aggro_bottom = self.rect.y + 300
 
         #this is bounds to check to attack
-        self.attack_right = self.rect.x + 80
-        self.attack_left = self.rect.x - 80
-        self.attack_top = self.rect.y - 80
-        self.attack_bottom = self.rect.y + 80
+        self.attack_right = self.rect.x + 88
+        self.attack_left = self.rect.x - 88
+        self.attack_top = self.rect.y - 75
+        self.attack_bottom = self.rect.y + 75
 
         if Hero.rect.y <= self.attack_bottom and Hero.rect.y >= self.attack_top:
             if Hero.rect.x >= self.attack_left and Hero.rect.x <= self.attack_right:
@@ -227,27 +229,63 @@ class ShrimpMob(Mob):
                 elif self.DIRECTION == "down":
                     self.image = self.walk_animation_down[self.current_frame]
             elif self.state == "attack":
-                if self.DIRECTION == "left":
-                    if self.attack_timer != 0 and self.attack_timer % 3 == 0:
-                        self.rect.x = self.rect.x + 21
-                    self.rect.x = self.rect.x - 7
-                    self.image = self.attack_animation_left[self.current_frame]
-                elif self.DIRECTION == "right":
-                    if self.attack_timer != 0 and self.attack_timer % 3 == 0:
-                        self.rect.x = self.rect.x - 21
-                    self.rect.x = self.rect.x + 7
-                    self.image = self.attack_animation_right[self.current_frame]
-                elif self.DIRECTION == "up":
-                    if self.attack_timer != 0 and self.attack_timer % 3 == 0:
-                        self.rect.y = self.rect.y + 21
-                    self.rect.y = self.rect.y - 7
-                    self.image = self.attack_animation_up[self.current_frame]
-                elif self.DIRECTION == "down":
-                    if self.attack_timer != 0 and self.attack_timer % 3 == 0:
-                        self.rect.y = self.rect.y - 21
-                    self.rect.y = self.rect.y + 7
-                    self.image = self.attack_animation_down[self.current_frame]
-                self.attack_timer += 1
+                if self.attack_ticker % 8 == 0:
+                        self.attack_timer = (self.attack_timer + 1) % 4
+                        if self.DIRECTION == "left":
+                            if self.attack_ticker != 0 and self.attack_timer == 0:
+                                self.image = self.attack_animation_left[0]
+                                self.rect.x += 40
+
+                            if self.attack_timer == 1:
+                                self.image = self.attack_animation_left[1]
+                                self.rect.x -= 20
+                            elif self.attack_timer == 2:
+                                self.image = self.attack_animation_left[2]
+                                self.rect.x -= 20
+                            elif self.attack_timer == 3:
+                                self.image = self.attack_animation_left[3]
+                                
+                        elif self.DIRECTION == "right":
+                            if self.attack_ticker != 0 and self.attack_timer == 0:
+                                self.image = self.attack_animation_right[0]
+                                self.rect.x -= 22
+
+                            if self.attack_timer == 1:
+                                self.image = self.attack_animation_right[1]
+                                self.rect.x += 12
+                            elif self.attack_timer == 2:
+                                self.image = self.attack_animation_right[2]
+                                self.rect.x += 10
+                            elif self.attack_timer == 3:
+                                self.image = self.attack_animation_right[3]
+                                
+                        elif self.DIRECTION == "up":
+                            if self.attack_ticker != 0 and self.attack_timer == 0:
+                                self.image = self.attack_animation_up[0]
+                                self.rect.y += 40
+
+                            if self.attack_timer == 1:
+                                self.image = self.attack_animation_up[1]
+                                self.rect.y -= 20
+                            elif self.attack_timer == 2:
+                                self.image = self.attack_animation_up[2]
+                                self.rect.y -= 20
+                            elif self.attack_timer == 3:
+                                self.image = self.attack_animation_up[3]
+                            
+                        elif self.DIRECTION == "down":
+                            if self.attack_ticker != 0 and self.attack_timer == 0:
+                                self.image = self.attack_animation_down[0]
+                                self.rect.y -= 14
+
+                            if self.attack_timer == 1:
+                                self.image = self.attack_animation_down[1]
+                                self.rect.y += 5
+                            elif self.attack_timer == 2:
+                                self.image = self.attack_animation_down[2]
+                                self.rect.y += 3
+                            elif self.attack_timer == 3:
+                                self.image = self.attack_animation_down[3]
             elif self.state == "aggro":
                 self.attack_timer = 0
                 if self.DIRECTION == "left":
@@ -361,7 +399,14 @@ class ShrimpMob(Mob):
 
 
         self.ticker += 1
+
+        if self.state == "attack":
+            self.attack_ticker += 1
+        else:
+            self.attack_ticker = 0
+
         if self.ticker % 5 == 0:
             self.current_frame = (self.current_frame+1) % 4
             self.ticker = 0
+
 
