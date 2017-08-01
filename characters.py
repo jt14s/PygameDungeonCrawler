@@ -19,7 +19,7 @@ class Hero(Sprite):
 
     # attributes to be shared by all instances of Hero
     current_room = None
-    current_x = 1
+    current_x = 0
 
     walls = None
     floors = None

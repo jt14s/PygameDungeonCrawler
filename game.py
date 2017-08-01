@@ -13,7 +13,7 @@ from game_over import *
 class GameMain():
     done = False
 
-    def __init__(self, character = 'PL', width=1224, height=700):
+    def __init__(self, character = 'PL', width=1224, height=952):
         pygame.init()
         #initialize joystick input
         pygame.joystick.init()
@@ -41,8 +41,8 @@ class GameMain():
         self.all_room_tiles = pygame.sprite.Group()
 
         # room variables
-        self.rooms = [Room1(), Room2(), Room2(), Room2(), Room2()]
-        self.current_x = 1
+        self.rooms = [Room1(), Room2(), Room3(), Room4(), Room5()]
+        self.current_x = 0
         self.current_room = self.rooms[self.current_x]
 
         self.hero.current_room = self.current_room

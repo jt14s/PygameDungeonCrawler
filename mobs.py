@@ -1,12 +1,13 @@
 import pygame, math
 from image_loader import *
 from rooms import *
+from items import *
 
 class Mob(pygame.sprite.Sprite):
     walls = None
     roofs = None
 
-    def __init__(self, image, x, y, hp, damage, knockback, id):
+    def __init__(self, image, x, y, hp, damage, knockback, id, item):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = image
@@ -27,6 +28,7 @@ class Mob(pygame.sprite.Sprite):
         self.DIRECTION = None
 
         self.attack_ticker = 0
+        self.item = item
 
     def follow_hero(self, Hero):
         # find direction vector from hero to enemy
@@ -79,6 +81,8 @@ class Mob(pygame.sprite.Sprite):
         self.hp -= damage
         print "mob took", damage, "damage"
         if self.hp <= 0:
+            if self.item is not None:
+                hero.items.add(Item('health', RopeImg, self.rect.x, self.rect.y))
             self.kill()
             print "mob", self.id, "ded"
             hero.remove_mob_with_id(self.id)
@@ -182,8 +186,8 @@ class Mob(pygame.sprite.Sprite):
 
 
 class ShrimpMob(Mob):
-    def __init__(self, x, y, id):
-        Mob.__init__(self, ShrimpWalkL1, x, y, 100, 20, 30, id)
+    def __init__(self, x, y, id, item = None):
+        Mob.__init__(self, ShrimpWalkL1, x, y, 100, 20, 30, id, item)
 
         self.walk_animation_left = [ShrimpWalkL1,ShrimpWalkL2,ShrimpWalkL1,ShrimpWalkL2]
         self.walk_animation_right = [ShrimpWalkR1,ShrimpWalkR2,ShrimpWalkR1,ShrimpWalkR2]
