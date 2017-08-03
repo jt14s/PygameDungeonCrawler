@@ -39,6 +39,14 @@ PaladinAttackD1 = pygame.image.load('images/characters/paladin/attack/down/attac
 PaladinAttackD2 = pygame.image.load('images/characters/paladin/attack/down/attack2.png')
 PaladinAttackD3 = pygame.image.load('images/characters/paladin/attack/down/attack3.png')
 
+#special images
+PaladinAOE1 = pygame.image.load('images/characters/paladin/special/special1.png')
+PaladinAOE2 = pygame.image.load('images/characters/paladin/special/special2.png')
+PaladinAOE3 = pygame.image.load('images/characters/paladin/special/special3.png')
+PaladinAOE4 = pygame.image.load('images/characters/paladin/special/special4.png')
+PaladinAOE5 = pygame.image.load('images/characters/paladin/special/special5.png')
+PaladinAOE6 = pygame.image.load('images/characters/paladin/special/special6.png')
+
 #######################################################################################################
 #Assasin character images #############################################################################
 #######################################################################################################
@@ -173,8 +181,9 @@ TorchImg8 = pygame.image.load('images/level1/wall_torch/walltorch4.png')
 #######################################################################################################
 
 #items
-RopeImg = pygame.image.load('images/items/rope/rope.png')
-ThrownRopeDown = pygame.image.load('images/items/rope/throwndown1.png')
+HealthPotion = pygame.image.load('images/items/potions/healthpotion.png')
+SpecialPotion = pygame.image.load('images/items/potions/specialpotion.png')
+
 
 #######################################################################################################
 #HUD Images ###########################################################################################

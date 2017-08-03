@@ -82,7 +82,7 @@ class Mob(pygame.sprite.Sprite):
         print "mob took", damage, "damage"
         if self.hp <= 0:
             if self.item is not None:
-                hero.items.add(Item('health', RopeImg, self.rect.x, self.rect.y))
+                hero.items.add(Item('health', HealthPotion, self.rect.x, self.rect.y))
             self.kill()
             print "mob", self.id, "ded"
             hero.remove_mob_with_id(self.id)
@@ -182,7 +182,120 @@ class Mob(pygame.sprite.Sprite):
                     if interaction == True:
                         break
 
+    def take_special_damage(self, damage, hero):
+        knockback_direction = None
+        if self.DIRECTION == 'up':
+            knockback_direction = 'down'
+        elif self.DIRECTION == 'down':
+            knockback_direction = 'up'
+        elif self.DIRECTION == 'right':
+            knockback_direction = 'left'
+        elif self.DIRECTION == 'left':
+            knockback_direction = 'right'
+                
+        self.hp -= damage
+        print "mob took", damage, "damage"
+        if self.hp <= 0:
+            if self.item is not None:
+                hero.items.add(Item('health', HealthPotion, self.rect.x, self.rect.y))
+            self.kill()
+            print "mob", self.id, "ded"
+            hero.remove_mob_with_id(self.id)
+        else:
+            mob = pygame.sprite.GroupSingle(self)
+            if knockback_direction == 'left':
+                for x in range(0, hero.special_knockback):
+                    self.rect.x -= 1
 
+                    interaction = False
+
+                    roof_hit_list = pygame.sprite.groupcollide(mob, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(.75))
+                    wall_hit_list = pygame.sprite.groupcollide(mob, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(.75))
+
+                    for wall in wall_hit_list:
+                        if not interaction:
+                            self.rect.left = wall.rect.right - 55
+                            interaction = True
+                
+                    for roof in roof_hit_list:
+                        if not interaction:
+                            self.rect.left = roof.rect.right - 55
+                            interaction = True
+                
+                    if interaction == True:
+                        break
+        
+            elif knockback_direction == 'right':
+                for x in range(0, hero.special_knockback):
+                    self.rect.x += 1
+
+                    interaction = False
+
+                    roof_hit_list = pygame.sprite.groupcollide(mob, self.roofs, False, False,
+                                                                           collided=pygame.sprite.collide_rect_ratio(.75))
+                    wall_hit_list = pygame.sprite.groupcollide(mob, self.walls, False, False,
+                                                               collided=pygame.sprite.collide_rect_ratio(.75))
+
+                    for wall in wall_hit_list:
+                        if not interaction:
+                            self.rect.right = wall.rect.left + 55
+                            interaction = True
+                
+                    for roof in roof_hit_list:
+                        if not interaction:
+                            self.rect.right = roof.rect.left + 55
+                            interaction = True
+                    
+                    if interaction == True:
+                        break
+
+            elif knockback_direction == 'up':
+                for y in range(0, hero.special_knockback):
+                    self.rect.y -= 1
+
+                    interaction = False
+
+                    roof_hit_list = pygame.sprite.groupcollide(mob, self.roofs, False, False,
+                                                               collided=pygame.sprite.collide_rect_ratio(.52))
+                    wall_hit_list = pygame.sprite.groupcollide(mob, self.walls, False, False,
+                                                               collided=pygame.sprite.collide_rect_ratio(.52))
+
+                    for wall in wall_hit_list:
+                        if not interaction:
+                            self.rect.top = wall.rect.bottom - 63
+                            interaction = True
+                
+                    for roof in roof_hit_list:
+                        if not interaction:
+                            self.rect.top = roof.rect.bottom - 63
+                            interaction = True
+
+                    if interaction == True:
+                        break
+                        
+            elif knockback_direction == 'down':
+                for y in range(0, hero.special_knockback):
+                    self.rect.y += 1
+
+                    interaction = False
+
+                    roof_hit_list = pygame.sprite.groupcollide(mob, self.roofs, False, False,
+                                                               collided=pygame.sprite.collide_rect_ratio(.52))
+                    wall_hit_list = pygame.sprite.groupcollide(mob, self.walls, False, False,
+                                                               collided=pygame.sprite.collide_rect_ratio(.52))
+
+                    for wall in wall_hit_list:
+                        if not interaction:
+                            self.rect.bottom = wall.rect.top + 63
+                            interaction = True
+                
+                    for roof in roof_hit_list:
+                        if not interaction:
+                            self.rect.bottom = roof.rect.top + 63
+                            interaction = True
+                
+                    if interaction == True:
+                        break
 
 
 class ShrimpMob(Mob):

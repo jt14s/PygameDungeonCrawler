@@ -191,7 +191,6 @@ class GameMain():
                     # physical attack
                     if event.key == K_SPACE:
                         self.hero.spacePressed = True
-                        self.hero.initiate_attack()
                     #special attack
                     elif event.key == K_u:
                         self.hero.specialPressed = True

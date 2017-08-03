@@ -95,7 +95,7 @@ class Room1(Room):
                        'RFFRRRRFFFFFFFFFFRx',
                        'RRRRRRRRRRRRRRRRRRx', ]
         
-        items = [Item('health', RopeImg, 544, 340), Item('special', ThrownRopeDown, 136 + 68 * 3, 340)]
+        items = [Item('health', HealthPotion, 544, 340), Item('special', SpecialPotion, 136 + 68 * 3, 340)]
         roofs = []
         walls = []
         floors = []

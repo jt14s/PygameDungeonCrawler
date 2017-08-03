@@ -54,6 +54,7 @@ class Hero(Sprite):
         # attack info
         self.can_attack = True
         self.attack_timer = -1
+        self.special_timer = -1
         self.invuln_frames = 0
 
         self.spacePressed = False
@@ -208,6 +209,9 @@ class Hero(Sprite):
         if self.attack_timer >= 0:
             self.attack()
 
+        if self.special_timer >= 0:
+            self.special()
+
         # movement and actions
         if self.upKeyPressed and self.can_move:
             self.DIRECTION = self.UP
@@ -320,6 +324,10 @@ class Hero(Sprite):
             if self.sp >= self.specialCost:
                 self.ui.sp_bar.updateSpecial(self.specialCost, self.sp, self.MAX_SP)
                 self.sp -= self.specialCost
+                self.initiate_special()
+
+        if self.spacePressed and self.can_attack:
+            self.initiate_attack()
                 
         elif self.oneKeyPressed and self.can_attack and self.inventory.slots[0][1] != 'empty':
             if self.inventory.slots[0][0].item_name == 'health':
@@ -391,6 +399,11 @@ class Hero(Sprite):
         self.can_attack = False
         self.attack_timer = self.attack_length
 
+    def initiate_special(self):
+        self.can_move = False
+        self.can_attack = False
+        self.special_timer = self.special_length
+
     def remove_mob_with_id(self, mob_id):
         i = 0
         for mob in self.current_room.mobs:
@@ -459,19 +472,26 @@ class Paladin(Hero):
         self.walk_up_animation = [PaladinU1, PaladinU2, PaladinU1, PaladinU3]
         self.attack_up_animation = [PaladinAttackU1, PaladinAttackU2, PaladinAttackU3]
 
+        self.special_animation = [PaladinAOE1, PaladinAOE2, PaladinAOE3, PaladinAOE4, PaladinAOE5, PaladinAOE6]
+
         #instance of a attack_hit_box hit box that will be used to attack
         self.attack_hit_box = None
-        self.specialCost = 10
+        self.specialCost = 33
         self.walk_rate = 8
         self.attack_length = 15
         self.attack_left_ratio = 0.7
         self.attack_up_ratio = 0.7
         self.damage = 34
+
         self.knockback = 80
+        self.special_knockback = 160
+
+        self.special_length = 18
+        self.special_damage = 10
 
         # hp vars
-        self.hp = 2000
-        self.MAX_HP = 2000
+        self.hp = 200
+        self.MAX_HP = 200
 
         # sp vars
         self.sp = 100
@@ -571,6 +591,57 @@ class Paladin(Hero):
             self.can_move = True
             self.can_attack = True
             self.attack_timer = -1
+            self.attack_hit_box = None
+
+    def special(self):
+        # perform attack animation
+        if self.special_timer > 0:
+            if self.special_timer % 3 == 0:
+                # change animation to next frame
+                self.image = self.special_animation[len(self.special_animation) - ((self.special_timer) / 3)]
+                # damage enemies that are in range, if on attack frame
+                if len(self.special_animation) - ((self.special_timer) / 3) == 3:
+                    self.rect.x -= 18
+                    self.rect.y -= 16
+                    self.attack_hit_box = AttackHitBox(PaladinAOE4, self.rect.x, self.rect.y, self.special_damage)
+
+                    attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                    mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                    for mob in mob_hit_list:
+                        mob.take_special_damage(self.attack_hit_box.damage, self)
+
+                elif len(self.special_animation) - ((self.special_timer) / 3) == 4:
+                    self.rect.x -= 17
+                    self.rect.y -= 17
+                    self.attack_hit_box = AttackHitBox(PaladinAOE5, self.rect.x, self.rect.y, self.special_damage)
+
+                    attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                    mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                    for mob in mob_hit_list:
+                        mob.take_special_damage(self.attack_hit_box.damage, self)
+
+                elif len(self.special_animation) - ((self.special_timer) / 3) == 5:                
+                    self.attack_hit_box = AttackHitBox(PaladinAOE6, self.rect.x, self.rect.y, self.special_damage)
+
+                    attack_hit_box = pygame.sprite.GroupSingle(self.attack_hit_box)
+                    mob_hit_list = pygame.sprite.groupcollide(self.mobs, attack_hit_box, False, False)
+
+                    for mob in mob_hit_list:
+                        mob.take_special_damage(self.attack_hit_box.damage, self)
+
+            self.special_timer -= 1
+        # attack finished; put back to standing position
+        elif self.special_timer == 0:
+            self.rect.x += 35
+            self.rect.y += 33
+            
+            self.read_buffer()
+
+            self.can_move = True
+            self.can_attack = True
+            self.special_timer = -1
             self.attack_hit_box = None
 
 class Mage(Hero):

@@ -12,10 +12,6 @@ class Item(pygame.sprite.Sprite):
         self.rect.y = y
         self.tier = 1
 
-class Rope(Item):
-    def __init__(self, name, image, x, y):
-        Item.__init__(self, name, image, x, y)
-
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, speed, walls, roofs, mobs, hero):
         pygame.sprite.Sprite.__init__(self)
