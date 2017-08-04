@@ -27,6 +27,7 @@ class Hero(Sprite):
     mobs = None
     portals = None
     chasms = None
+    lockeddoors = None
 
     def __init__(self, image, x, y, DIRECTION, screen):
         ''' Initialize all of the attributes '''
@@ -63,6 +64,7 @@ class Hero(Sprite):
         
         # items info
         self.items = None
+        self.key_count = 0
         self.oneKeyPressed = False
         self.twoKeyPressed = False
 
@@ -97,11 +99,14 @@ class Hero(Sprite):
         # add items to inventory
         for item in item_hit_list:
             for slot in self.inventory.slots:
-                if slot[1] == 'empty':
-                    slot[0].addToInventory(item.name, item.image, self.inventory.rect.x + 21 + (slot[0].index * 60), self.inventory.rect.y + 23)
-                    slot[1] = 'used'
-                    self.item_slot_group.add(slot[0])
-                    break
+                if item.name == 'key':
+                    self.key_count += 1
+                else:
+                    if slot[1] == 'empty':
+                        slot[0].addToInventory(item.name, item.image, self.inventory.rect.x + 21 + (slot[0].index * 60), self.inventory.rect.y + 23)
+                        slot[1] = 'used'
+                        self.item_slot_group.add(slot[0])
+                        break
 
         # mob collision
         for mob in mob_hit_list:
@@ -312,7 +317,8 @@ class Hero(Sprite):
 
                 roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
                 wall_hit_list = pygame.sprite.groupcollide(player, self.walls, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
-                portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False, collided=pygame.sprite.collide_rect_ratio(1))
+                lock_hit_list = pygame.sprite.groupcollide(self.lockeddoors, player, False, False, collided=pygame.sprite.collide_rect_ratio(1))
+                portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False, collided=pygame.sprite.collide_rect_ratio(.52))
 
                 for wall in wall_hit_list:
                     self.rect.right = wall.rect.left + 63
@@ -321,6 +327,14 @@ class Hero(Sprite):
                 for roof in roof_hit_list:
                     self.rect.right = roof.rect.left + 63
                     interaction = True
+
+                for lock in lock_hit_list:
+                    if self.key_count > 0:
+                        lock.kill()
+                        self.key_count -= 1
+                    else:
+                        self.rect.right = lock.rect.left + 63
+                        interaction = True
 
                 for portal in portal_hit_list:
                     self.rect.y = portal.rect.y

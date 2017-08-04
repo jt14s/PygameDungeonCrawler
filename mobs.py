@@ -7,6 +7,7 @@ class Mob(pygame.sprite.Sprite):
     walls = None
     roofs = None
     chasms = None
+    lockeddoors = None
 
     def __init__(self, image, x, y, hp, damage, knockback, id, item):
         pygame.sprite.Sprite.__init__(self)
@@ -83,7 +84,7 @@ class Mob(pygame.sprite.Sprite):
         print "mob took", damage, "damage"
         if self.hp <= 0:
             if self.item is not None:
-                hero.items.add(Item('health', HealthPotion, self.rect.x, self.rect.y))
+                hero.items.add(Item('key', KeyImg, self.rect.x, self.rect.y))
             self.kill()
             print "mob", self.id, "ded"
             hero.remove_mob_with_id(self.id)
@@ -206,7 +207,7 @@ class Mob(pygame.sprite.Sprite):
         print "mob took", damage, "damage"
         if self.hp <= 0:
             if self.item is not None:
-                hero.items.add(Item('health', HealthPotion, self.rect.x, self.rect.y))
+                hero.items.add(Item('key', KeyImg, self.rect.x, self.rect.y))
             self.kill()
             print "mob", self.id, "ded"
             hero.remove_mob_with_id(self.id)

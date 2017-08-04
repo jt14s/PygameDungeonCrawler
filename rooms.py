@@ -150,8 +150,8 @@ class Room2(Room):
 
         room_layout = ['RRRRRRRRRFRRRRRRRRx',
                        'RWWRWWRWWFWRWWRWWRx',
-                       'TFFTFFTFFFFTFFTFFTx',
-                       'FFFFFFFFFFFFFFFFFFx',
+                       'TFFTFFTFFFFTFFTFFRx',
+                       'FFFFFFFFFFFFFFFFFTx',
                        'FFFFFFFFFFFFFFFFFFx',
                        'RFFRFFRFFFFRFFRFFRx',
                        'RFFTFFTFFFFTFFTFFRx',
@@ -168,7 +168,9 @@ class Room2(Room):
         walls = []
         floors = []
         chasms = []
+        lockeddoors = [MapTile(1224 - 68, 272, LockDoorVImg)]
         portals = [Portal(-68, 204, WallImg, 0), Portal(-68, 272, WallImg, 0), Portal(1224, 204, WallImg, 4), Portal(1224, 272, WallImg, 4), Portal(612, -68, WallImg, 2), Portal(612, 1020, WallImg, 3)]
+
         x, y = 0, 0
         i = 1
 
@@ -207,8 +209,11 @@ class Room2(Room):
         for portal in portals:
             self.portal_list.add(portal)
 
+        for lock in lockeddoors:
+            self.lock_list.add(lock)
+
 class Room3(Room):
-    mobs = [ShrimpMob(68 * 2, 68 * 8, 0, 'health'), ShrimpMob(816 + (68 * 2), 68 * 8, 1, None)]
+    mobs = [ShrimpMob(68 * 2, 68 * 8, 0, 'key'), ShrimpMob(816 + (68 * 2), 68 * 8, 1, None)]
 
     def __init__(self):
         Room.__init__(self)
@@ -344,8 +349,8 @@ class Room5(Room):
 
         room_layout = ['RRRRRRRRRRRRRRRRRRx',
                        'RRRBBBBBBBBBBBBBBRx',
-                       'TWT              Rx',
-                       'FFF              Rx',
+                       'RWT              Rx',
+                       'TFF              Rx',
                        'FFF              Rx',
                        'RFF              Wx',
                        'RFFFFFFFFFFFFFFFFFx',

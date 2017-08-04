@@ -54,14 +54,17 @@ class GameMain():
         self.hero.mobs = self.current_room.mob_list
         self.hero.portals = self.current_room.portal_list
         self.hero.chasms = self.current_room.chasm_list
+        self.hero.lockeddoors = self.current_room.lock_list
 
         for mob in self.current_room.mob_list:
             mob.walls = self.hero.walls
             mob.roofs = self.hero.roofs
             mob.chasms = self.hero.chasms
+            mob.lockeddoors = self.hero.lockeddoors
 
         # load sprite groups accordingly
-        self.all_room_tiles.add(self.current_room.floor_list,         self.current_room.wall_list, self.current_room.item_list)
+        self.lock_tiles = pygame.sprite.GroupSingle(self.current_room.lock_list)
+        self.all_room_tiles.add(self.current_room.chasm_list, self.current_room.floor_list, self.current_room.wall_list, self.current_room.item_list)
         self.all_sprite_list.add(self.hero.mobs, self.hero)
 
         self.ui = pygame.sprite.GroupSingle(self.hero.ui)
@@ -88,21 +91,25 @@ class GameMain():
                 self.hero.roofs = self.current_room.roof_list
                 self.hero.portals = self.current_room.portal_list
                 self.hero.chasms = self.current_room.chasm_list
-        
+                self.hero.lockeddoors = self.current_room.lock_list
+
                 self.hero.mobs = self.current_room.mob_list
                 self.hero.mobs.roofs = self.hero.roofs
                 self.hero.mobs.walls = self.hero.walls
                 self.hero.mobs.chasms = self.hero.chasms
+                self.hero.mobs.lockeddoors = self.hero.lockeddoors
 
                 for mob in self.current_room.mob_list:
                     mob.roofs = self.hero.mobs.roofs
                     mob.walls = self.hero.mobs.walls
                     mob.chasms = self.hero.mobs.chasms
-                
+                    mob.lockeddoors = self.hero.mobs.lockeddoors
+
                 # load sprite groups accordingly
                 self.all_room_tiles.empty()
                 self.all_sprite_list.empty()
 
+                self.lock_tiles = pygame.sprite.GroupSingle(self.current_room.lock_list)
                 self.all_room_tiles.add(self.current_room.chasm_list, self.current_room.floor_list, self.current_room.wall_list, self.current_room.item_list)
                 self.all_sprite_list.add(self.hero.mobs, self.hero)
 
@@ -120,6 +127,7 @@ class GameMain():
     def draw(self):
 
         self.all_room_tiles.draw(self.screen)
+        self.lock_tiles.draw(self.screen)
         self.current_room.item_list.draw(self.screen)
         self.all_sprite_list.draw(self.screen)
 

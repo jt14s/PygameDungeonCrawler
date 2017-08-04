@@ -180,6 +180,10 @@ TorchImg8 = pygame.image.load('images/level1/wall_torch/walltorch4.png')
 ChasmImgBottom = pygame.image.load('images/level1/chasm/chasmbottom.png')
 ChasmImgTop = pygame.image.load('images/level1/chasm/chasmtop.png')
 
+#lockeddoor images
+LockDoorVImg = pygame.image.load('images/level1/lockeddoor/lockvertical.png')
+LockDoorHImg = pygame.image.load('images/level1/lockeddoor/lockhorizontal.png')
+
 #######################################################################################################
 #Item Images ##########################################################################################
 #######################################################################################################
@@ -187,7 +191,7 @@ ChasmImgTop = pygame.image.load('images/level1/chasm/chasmtop.png')
 #items
 HealthPotion = pygame.image.load('images/items/potions/healthpotion.png')
 SpecialPotion = pygame.image.load('images/items/potions/specialpotion.png')
-
+KeyImg = pygame.image.load('images/items/key/key.png')
 
 #######################################################################################################
 #HUD Images ###########################################################################################
