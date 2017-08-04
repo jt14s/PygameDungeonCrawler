@@ -5,8 +5,6 @@ from game import *
 from hud import *
 from main_menu import Sprite, CursorLocation, Button, Splash, MainMenu
 
-#rename buttons and replace logo with Game Over
-
 class GameOver(object):
     def __init__(self, width=1224, height=952):
         pygame.init()
@@ -23,21 +21,25 @@ class GameOver(object):
 
         # background group
         self.background = Splash()
-        self.logo = Sprite(GameLogo, self.width / 6, 0)
         self.background_group = pygame.sprite.GroupSingle(self.background)
-        self.logo_group = pygame.sprite.GroupSingle(self.logo)
-
+      
         # buttons group
-        self.single_mode_button = Button(SingleplayerButton, self.width / 2.8, self.height / 2)
-        self.multi_mode_button = Button(MultiplayerButton, self.width / 2.8, self.height / 2 + 70)
+        self.main_menu_button = Button(MainMenuButton, self.width / 2.8, self.height / 2)
+        self.quit_game_button = Button(QuitGameButton, self.width / 2.8, self.height / 2 + 70)
 
         self.menu_buttons = pygame.sprite.Group()
-        self.menu_buttons.add(self.single_mode_button, self.multi_mode_button)
+        self.menu_buttons.add(self.main_menu_button, self.quit_game_button)
+
+        game_over_font1 = pygame.font.SysFont(None, 150)
+        self.game_over_text = game_over_font1.render('GAME OVER', 0, (255,255,255))
 
     def game_over_loop(self):
+        
         while not self.done:
             self.handle_events()
             self.draw()
+
+            
             self.clock.tick(60)
         pygame.quit()
 
@@ -63,11 +65,11 @@ class GameOver(object):
                     cursor.kill()
 
                     for button in button_click_list:
-                        if button == self.single_mode_button:
+                        if button == self.main_menu_button:
                             self.clean()
                             os.execl(sys.executable, sys.executable, *sys.argv)
 
-                        elif button == self.multi_mode_button:
+                        elif button == self.quit_game_button:
                             self.clean()
                             pygame.quit()
                             quit()
@@ -76,19 +78,18 @@ class GameOver(object):
 
     def draw(self):
         self.background_group.draw(self.screen)
-        self.logo_group.draw(self.screen)
         self.menu_buttons.draw(self.screen)
         self.background_group.update()
+        
+        self.screen.blit(self.game_over_text, (self.width/2.8 - 110, self.height/2.5 - 70))
 
         pygame.display.flip()
 
     def clean(self):
         del self.background
-        del self.logo
-        del self.logo_group
         del self.background_group
-        del self.single_mode_button
-        del self.multi_mode_button
+        del self.main_menu_button
+        del self.quit_game_button
         del self.menu_buttons
 
 

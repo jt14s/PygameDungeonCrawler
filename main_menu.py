@@ -56,6 +56,9 @@ class MainMenu(object):
 
     def __init__(self, width=1224, height=952):
         pygame.init()
+        pygame.mixer.init()
+        pygame.mixer.music.load('music/maintheme.mp3')
+        pygame.mixer.music.play(-1)
 
         # misc
         self.done = False

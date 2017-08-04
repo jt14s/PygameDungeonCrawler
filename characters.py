@@ -26,6 +26,7 @@ class Hero(Sprite):
     roofs = None
     mobs = None
     portals = None
+    chasms = None
 
     def __init__(self, image, x, y, DIRECTION, screen):
         ''' Initialize all of the attributes '''
@@ -190,10 +191,15 @@ class Hero(Sprite):
                         interaction = False
 
                         roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
+                        chasm_hit_list = pygame.sprite.groupcollide(player, self.chasms, False, False, collided=pygame.sprite.collide_rect_ratio(1))
                         portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False, collided=pygame.sprite.collide_rect_ratio(1))
 
                         for roof in roof_hit_list:
                             self.rect.bottom = roof.rect.top + 63
+                            interaction = True
+
+                        for chasm in chasm_hit_list:
+                            self.rect.bottom = chasm.rect.top + 63
                             interaction = True
 
                         for portal in portal_hit_list:
@@ -247,10 +253,15 @@ class Hero(Sprite):
                 interaction = False
 
                 roof_hit_list = pygame.sprite.groupcollide(player, self.roofs, False, False, collided=pygame.sprite.collide_rect_ratio(0.52))
+                chasm_hit_list = pygame.sprite.groupcollide(player, self.chasms, False, False, collided=pygame.sprite.collide_rect_ratio(1))
                 portal_hit_list = pygame.sprite.groupcollide(self.portals, player, False, False, collided=pygame.sprite.collide_rect_ratio(1))
 
                 for roof in roof_hit_list:
                     self.rect.bottom = roof.rect.top + 63
+                    interaction = True
+
+                for chasm in chasm_hit_list:
+                    self.rect.bottom = chasm.rect.top + 63
                     interaction = True
 
                 for portal in portal_hit_list:
@@ -487,7 +498,7 @@ class Paladin(Hero):
         self.special_knockback = 160
 
         self.special_length = 18
-        self.special_damage = 10
+        self.special_damage = 60
 
         # hp vars
         self.hp = 200

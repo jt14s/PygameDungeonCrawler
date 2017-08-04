@@ -6,6 +6,7 @@ from items import *
 class Mob(pygame.sprite.Sprite):
     walls = None
     roofs = None
+    chasms = None
 
     def __init__(self, image, x, y, hp, damage, knockback, id, item):
         pygame.sprite.Sprite.__init__(self)
@@ -166,6 +167,9 @@ class Mob(pygame.sprite.Sprite):
 
                     roof_hit_list = pygame.sprite.groupcollide(mob, self.roofs, False, False,
                                                                collided=pygame.sprite.collide_rect_ratio(.52))
+                    chasm_hit_list = pygame.sprite.groupcollide(mob, self.chasms, False, False,
+                                                               collided=pygame.sprite.collide_rect_ratio(1))
+
                     wall_hit_list = pygame.sprite.groupcollide(mob, self.walls, False, False,
                                                                collided=pygame.sprite.collide_rect_ratio(.52))
 
@@ -177,6 +181,11 @@ class Mob(pygame.sprite.Sprite):
                     for roof in roof_hit_list:
                         if not interaction:
                             self.rect.bottom = roof.rect.top + 63
+                            interaction = True
+                
+                    for chasm in chasm_hit_list:
+                        if not interaction:
+                            self.rect.bottom = chasm.rect.top + 63
                             interaction = True
                 
                     if interaction == True:
@@ -280,7 +289,11 @@ class Mob(pygame.sprite.Sprite):
                     interaction = False
 
                     roof_hit_list = pygame.sprite.groupcollide(mob, self.roofs, False, False,
+
                                                                collided=pygame.sprite.collide_rect_ratio(.52))
+                    chasm_hit_list = pygame.sprite.groupcollide(mob, self.chasms, False, False,
+
+                                                               collided=pygame.sprite.collide_rect_ratio(1))
                     wall_hit_list = pygame.sprite.groupcollide(mob, self.walls, False, False,
                                                                collided=pygame.sprite.collide_rect_ratio(.52))
 
@@ -292,6 +305,11 @@ class Mob(pygame.sprite.Sprite):
                     for roof in roof_hit_list:
                         if not interaction:
                             self.rect.bottom = roof.rect.top + 63
+                            interaction = True
+                
+                    for chasm in chasm_hit_list:
+                        if not interaction:
+                            self.rect.bottom = chasm.rect.top + 63
                             interaction = True
                 
                     if interaction == True:

@@ -61,6 +61,7 @@ class Room(object):
     key_list = None
     lock_list = None
     portal_list = None
+    chasm_list = None
 
     def __init__(self):
         self.wall_list = pygame.sprite.Group()
@@ -69,7 +70,8 @@ class Room(object):
         self.mob_list = pygame.sprite.Group()
         self.item_list = pygame.sprite.Group()
         self.key_list = pygame.sprite.Group()
-        self.lock_list = pygame.sprite.Group()
+        self.lock_list = pygame.sprite.Group()        
+        self.chasm_list = pygame.sprite.Group()
 
         self.portal_list = pygame.sprite.Group()
 
@@ -87,7 +89,7 @@ class Room1(Room):
                        'RFFRFFFFFFRFFFFFFFx',
                        'RFFRFFFFFFRFFFRRRRx',
                        'RFFRFFFFFFRFFFRRRRx',
-                       'RFFRRRRFRRRFFFWWWRx',
+                       'RFFRRRRFRRRFFFWTWRx',
                        'RFFRRRRFRRRFFFFFFRx',
                        'RFFTWWTFTWWFFFFFFRx',
                        'RFFFFFFFFFFFFFFFFRx',
@@ -99,7 +101,7 @@ class Room1(Room):
         roofs = []
         walls = []
         floors = []
-
+        chasms = []
         portals = [Portal(1224, 68 * 3, WallImg, 1), Portal(1224, 68 * 4, WallImg, 1)]
         x, y = 0, 0
         i = 1
@@ -165,6 +167,7 @@ class Room2(Room):
         roofs = []
         walls = []
         floors = []
+        chasms = []
         portals = [Portal(-68, 204, WallImg, 0), Portal(-68, 272, WallImg, 0), Portal(1224, 204, WallImg, 4), Portal(1224, 272, WallImg, 4), Portal(612, -68, WallImg, 2), Portal(612, 1020, WallImg, 3)]
         x, y = 0, 0
         i = 1
@@ -229,6 +232,7 @@ class Room3(Room):
         roofs = []
         walls = []
         floors = []
+        chasms = []
         portals = [Portal(612, 1020, WallImg, 1)]
         x, y = 0, 0
         i = 1
@@ -293,6 +297,7 @@ class Room4(Room):
         roofs = []
         walls = []
         floors = []
+        chasms = []
         portals = [Portal(612, -68, WallImg, 1)]
         x, y = 0, 0
         i = 1
@@ -333,20 +338,20 @@ class Room4(Room):
             self.portal_list.add(portal)
 
 class Room5(Room):
-    mobs = []
+    mobs = [ShrimpMob(68 * 5, 68 * 6, 0), ShrimpMob(68 * 8, 68 * 8, 1), ShrimpMob(68 * 11, 68 * 6, 2), ShrimpMob(68 * 14, 68 * 8, 3)]
     def __init__(self):
         Room.__init__(self)
 
         room_layout = ['RRRRRRRRRRRRRRRRRRx',
-                       'RWW              Rx',
-                       'TWW              Rx',
+                       'RRRBBBBBBBBBBBBBBRx',
+                       'TWT              Rx',
                        'FFF              Rx',
                        'FFF              Rx',
-                       'RFF              Rx',
+                       'RFF              Wx',
                        'RFFFFFFFFFFFFFFFFFx',
                        'RFFFFFFFFFFFFFFFFFx',
                        'RFFFFFFFFFFFFFFFFFx',
-                       'R                Rx',
+                       'RBBBBBBBBBBBBBBBBRx',
                        'R                Rx',
                        'R                Rx',
                        'R                Rx',
@@ -356,7 +361,80 @@ class Room5(Room):
         roofs = []
         walls = []
         floors = []
-        portals = [Portal(-68, 204, WallImg, 1), Portal(-68, 272, WallImg, 1)]
+        chasms = []
+        portals = [Portal(-68, 204, WallImg, 1), Portal(-68, 272, WallImg, 1), Portal(1224, 408, WallImg, 5), Portal(1224, 476, WallImg, 5), Portal(1224, 544, WallImg, 5)]
+        x, y = 0, 0
+        i = 1
+
+        for section in room_layout:
+            for surface in section:
+                if surface == 'x':
+                    x = 0
+                else:
+                    if surface == 'R':
+                        roofs.append(Wall(x, y, RoofImgCenterCenter))
+                    elif surface == 'W':
+                        walls.append(Wall(x, y, WallImg))
+                    elif surface == 'T':
+                        walls.append(TorchBrick(x, y, TorchImg1))
+                    elif surface == 'F':
+                        floors.append(Floor(x, y, FloorImgCenter))
+                    elif surface == ' ':
+                        walls.append(Wall(x, y, ChasmImgTop))
+                    elif surface == 'B':
+                        chasms.append(Wall(x, y, ChasmImgBottom))
+
+                    x += 68
+            y += 68
+
+        for wall in walls:
+            self.wall_list.add(wall)
+
+        for roof in roofs:
+            self.roof_list.add(roof)
+
+        for floor in floors:
+            self.floor_list.add(floor)
+
+        for chasm in chasms:
+            self.chasm_list.add(chasm)
+
+        for item in items:
+            self.item_list.add(item)
+
+        for mob in self.mobs:
+            self.mob_list.add(mob)
+
+        for portal in portals:
+            self.portal_list.add(portal)
+
+
+class Room6(Room):
+    mobs = [ShrimpMob(68 * 5, 68 * 3, 0), ShrimpMob(68 * 8, 68 * 5, 1), ShrimpMob(68 * 11, 68 * 3, 2), ShrimpMob(68 * 14, 68 * 5, 3), ShrimpMob(68 * 5, 68 * 7, 4), ShrimpMob(68 * 8, 68 * 9, 5), ShrimpMob(68 * 11, 68 * 7, 6), ShrimpMob(68 * 14, 68 * 9, 7)]
+    def __init__(self):
+        Room.__init__(self)
+
+        room_layout = ['RRRRRRRRRRRRRRRRRRx',
+                       'RRRWTWWWTWWWTWWRRRx',
+                       'RWWFFFFFFFFFFFFWWRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'WFFFFFFFFFFFFFFFFRx',
+                       'FFFFFFFFFFFFFFFFFRx',
+                       'FFFFFFFFFFFFFFFFFRx',
+                       'FFFFFFFFFFFFFFFFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'RFFFFFFFFFFFFFFFFRx',
+                       'RRRRFFFFFFFFFFRRRRx',
+                       'RRRRRRRRRRRRRRRRRRx',
+                       'RRRRRRRRRRRRRRRRRRx', ]
+
+        items = []
+        roofs = []
+        walls = []
+        floors = []
+        chasms = []
+        portals = []
         x, y = 0, 0
         i = 1
 

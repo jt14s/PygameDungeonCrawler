@@ -41,7 +41,7 @@ class GameMain():
         self.all_room_tiles = pygame.sprite.Group()
 
         # room variables
-        self.rooms = [Room1(), Room2(), Room3(), Room4(), Room5()]
+        self.rooms = [Room1(), Room2(), Room3(), Room4(), Room5(), Room6()]
         self.current_x = 0
         self.current_room = self.rooms[self.current_x]
 
@@ -53,13 +53,15 @@ class GameMain():
         self.hero.roofs = self.current_room.roof_list
         self.hero.mobs = self.current_room.mob_list
         self.hero.portals = self.current_room.portal_list
+        self.hero.chasms = self.current_room.chasm_list
 
         for mob in self.current_room.mob_list:
             mob.walls = self.hero.walls
             mob.roofs = self.hero.roofs
+            mob.chasms = self.hero.chasms
 
         # load sprite groups accordingly
-        self.all_room_tiles.add(self.current_room.floor_list, self.current_room.wall_list, self.current_room.item_list)
+        self.all_room_tiles.add(self.current_room.floor_list,         self.current_room.wall_list, self.current_room.item_list)
         self.all_sprite_list.add(self.hero.mobs, self.hero)
 
         self.ui = pygame.sprite.GroupSingle(self.hero.ui)
@@ -85,21 +87,23 @@ class GameMain():
                 self.hero.walls = self.current_room.wall_list
                 self.hero.roofs = self.current_room.roof_list
                 self.hero.portals = self.current_room.portal_list
+                self.hero.chasms = self.current_room.chasm_list
         
                 self.hero.mobs = self.current_room.mob_list
                 self.hero.mobs.roofs = self.hero.roofs
                 self.hero.mobs.walls = self.hero.walls
+                self.hero.mobs.chasms = self.hero.chasms
 
                 for mob in self.current_room.mob_list:
                     mob.roofs = self.hero.mobs.roofs
                     mob.walls = self.hero.mobs.walls
+                    mob.chasms = self.hero.mobs.chasms
                 
                 # load sprite groups accordingly
                 self.all_room_tiles.empty()
                 self.all_sprite_list.empty()
 
-                self.all_room_tiles.add(self.current_room.floor_list, self.current_room.wall_list,
-                                        self.current_room.item_list)
+                self.all_room_tiles.add(self.current_room.chasm_list, self.current_room.floor_list, self.current_room.wall_list, self.current_room.item_list)
                 self.all_sprite_list.add(self.hero.mobs, self.hero)
 
             self.handle_events()
@@ -361,21 +365,18 @@ class GameMain():
         self.hero.leftKeyPressed = False
         self.hero.rightKeyPressed = False
 
-        quit_button = Button(SingleplayerButton, self.screen.get_width()/2.8, self.screen.get_height()/2.5)
-        resume_button = Button(PlayButton, self.screen.get_width()/2.8, self.screen.get_height()/2.5 + 70)
+        quit_button = Button(QuitGameButton, self.screen.get_width()/2.8, self.screen.get_height()/2.5)
+        resume_button = Button(ResumeButton, self.screen.get_width()/2.8, self.screen.get_height()/2.5 + 70)
 
         button_group = pygame.sprite.Group()
         button_group.add(quit_button, resume_button)
 
         pause_font1 = pygame.font.SysFont(None, 60)
-        pause_font2 = pygame.font.SysFont(None, 25)
         pause_text = pause_font1.render('- PAUSED -', 0, (255,255,255))
-        #pause_text_sub = pause_font2.render('PRESS START BUTTON', 0, (255,255,255))
 
         while self.pause:    
             
             self.screen.blit(pause_text, (self.screen.get_width()/2.8 + 70, self.screen.get_height()/2.5 - 70))
-            #self.screen.blit(pause_text_sub, (self.screen.get_width()/2.8 + 75, self.screen.get_height()/2.5 - 10))
 
             for event in pygame.event.get():
                 joystick_count = pygame.joystick.get_count()

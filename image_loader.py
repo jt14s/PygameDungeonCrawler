@@ -176,6 +176,10 @@ TorchImg6 = pygame.image.load('images/level1/wall_torch/walltorch4.png')
 TorchImg7 = pygame.image.load('images/level1/wall_torch/walltorch5.png')
 TorchImg8 = pygame.image.load('images/level1/wall_torch/walltorch4.png')
 
+#chasm images
+ChasmImgBottom = pygame.image.load('images/level1/chasm/chasmbottom.png')
+ChasmImgTop = pygame.image.load('images/level1/chasm/chasmtop.png')
+
 #######################################################################################################
 #Item Images ##########################################################################################
 #######################################################################################################
@@ -259,6 +263,10 @@ MultiplayerButton = pygame.image.load('images/menu/buttons/multi.png')
 
 PlayButton = pygame.image.load('images/menu/buttons/play.png')
 PlayButtonHover = pygame.image.load('images/menu/buttons/playhover.png')
+
+MainMenuButton = pygame.image.load('images/menu/buttons/mainmenu.png')
+QuitGameButton = pygame.image.load('images/menu/buttons/quitgame.png')
+ResumeButton = pygame.image.load('images/menu/buttons/resume.png')
 
 #portraits
 PaladinPortrait = pygame.image.load('images/menu/portraits/paladin.png')
